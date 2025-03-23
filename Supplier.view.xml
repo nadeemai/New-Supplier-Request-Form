@@ -1,1 +1,259 @@
+<mvc:View
+    controllerName="com.tableentry.tablestructure.controller.Table_Entry"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:core="sap.ui.core">
 
+    <f:FlexibleColumnLayout id="flexibleColumnLayout" layout="OneColumn">
+        <f:beginColumnPages>
+            <Page id="productsPage" title="Supplier Registration Dashboard" titleAlignment="Center">
+                <Panel id="_IDGenPanel" width="auto" class="sapUiResponsiveMargin">
+                    <content>
+                        <l:VerticalLayout id="_IDGenVerticalLayout" width="100%">
+                            <!-- Launch Tiles -->
+                            <l:Grid id="tileGrid" defaultSpan="XL2 L2 M4 S6" hSpacing="1" vSpacing="1" class="centeredGrid">
+                                <l:content>
+                                    <GenericTile id="draftTile" header="Draft" press=".onTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" frameType="OneByHalf">
+                                        <TileContent id="_IDGenTileContent1">
+                                            <NumericContent id="_IDGenNumericContent1" value="{products>/draftCount}" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile id="myPendingTile" header="My Pending Action" press=".onTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" frameType="OneByHalf">
+                                        <TileContent id="_IDGenTileContent2">
+                                            <NumericContent id="_IDGenNumericContent2" value="{products>/myPendingCount}" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile id="pendingWithSupplierTile" header="Pending with Supplier" press=".onTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" frameType="OneByHalf">
+                                        <TileContent id="_IDGenTileContent3">
+                                            <NumericContent id="_IDGenNumericContent3" value="{products>/pendingWithSupplierCount}" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile id="onBoardingTile" header="On-Boarding Stage" press=".onTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" frameType="OneByHalf">
+                                        <TileContent id="_IDGenTileContent4">
+                                            <NumericContent id="_IDGenNumericContent4" value="{products>/onBoardingCount}" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+                                    <GenericTile id="allTile" header="All Requests" press=".onTilePress" class="sapUiTinyMarginBegin sapUiTinyMarginTop tileLayout" frameType="OneByHalf">
+                                        <TileContent id="_IDGenTileContent5">
+                                            <NumericContent id="_IDGenNumericContent5" value="{products>/allCount}" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+                                </l:content>
+                            </l:Grid>
+
+                            <!-- Create New Supplier Request Button in a Separate Toolbar -->
+                            <Toolbar id="actionToolbar" class="sapUiSmallMargin">
+                                <ToolbarSpacer id="_IDGenToolbarSpacer2" />
+                                <Button id="createNewSupplierButton" text="Create New Supplier Request" press=".onOrderPress" type="Emphasized" />
+                            </Toolbar>
+
+                            <!-- Table -->
+                            <Table
+                                id="productsTable"
+                                items="{products>/items}"
+                                width="auto"
+                                mode="None">
+                                <headerToolbar>
+                                    <Toolbar id="_IDGenToolbar">
+                                        <!-- Filter Options Moved Here -->
+                                        <Label id="supplierIdLabel" text="Supplier ID:" class="sapUiTinyMarginEnd" />
+                                        <Input id="supplierIdInput" width="15%" placeholder="Enter Supplier ID" change=".onSupplierIdChange" />
+                                        <Label id="supplierTypeLabel" text="Supplier Type:" class="sapUiTinyMarginEnd" />
+                                        <ComboBox id="supplierTypeComboBox" width="15%" placeholder="Select Supplier Type" selectionChange=".onSupplierTypeChange">
+                                            <core:Item id="_IDGenItem1" key="All" text="All" />
+                                            <core:Item id="_IDGenItem2" key="Direct" text="Direct" />
+                                            <core:Item id="_IDGenItem3" key="Indirect" text="Indirect" />
+                                        </ComboBox>
+                                        <Label id="stageLabel" text="Stage:" class="sapUiTinyMarginEnd" />
+                                        <ComboBox id="stageComboBox" width="15%" placeholder="Select Stage" selectionChange=".onStageChange">
+                                            <core:Item id="_IDGenItem4" key="All" text="All" />
+                                            <core:Item id="_IDGenItem5" key="SUPPLIER" text="Supplier" />
+                                            <core:Item id="_IDGenItem6" key="BUYER" text="Buyer" />
+                                            <core:Item id="_IDGenItem7" key="ON BOARDING" text="On Boarding" />
+                                        </ComboBox>
+                                        <Label id="statusLabel" text="Status:" class="sapUiTinyMarginEnd" />
+                                        <ComboBox id="statusComboBox" width="15%" placeholder="Select Status" selectionChange=".onStatusChange">
+                                            <core:Item id="_IDGenItem8" key="All" text="All" />
+                                            <core:Item id="_IDGenItem9" key="DRAFT" text="Draft" />
+                                            <core:Item id="_IDGenItem10" key="APPROVED" text="Approved" />
+                                            <core:Item id="_IDGenItem11" key="CANCELLED" text="Cancelled" />
+                                        </ComboBox>
+                                        <ToolbarSpacer id="_IDGenToolbarSpacer1" />
+                                        <Button id="downloadButton" icon="sap-icon://download" press=".onDownloadPress" tooltip="Download table data as CSV" type="Emphasized" />
+                                    </Toolbar>
+                                </headerToolbar>
+                                <columns>
+                                    <!-- Supplier Request ID -->
+                                    <Column id="_IDGenColumn" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="supplierRequestId"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox" alignItems="Center">
+                                                <Text id="supplierRequestIdHeader" text="Supplier Request ID" wrapping="true" />
+                                                <core:Icon id="sortIcon_supplierRequestId" src="sap-icon://sort-ascending" press=".onSortSupplierRequestId" tooltip="Sort Supplier Request ID" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Supplier Name -->
+                                    <Column id="_IDGenColumn1" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="supplierName"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox1" alignItems="Center">
+                                                <Text id="supplierNameHeader" text="Supplier Name" wrapping="true" />
+                                                <core:Icon id="sortIcon_supplierName" src="sap-icon://sort-ascending" press=".onSortSupplierName" tooltip="Sort Supplier Name" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Type -->
+                                    <Column id="_IDGenColumn2" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="type"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox2" alignItems="Center">
+                                                <Text id="typeHeader" text="Type" wrapping="true" />
+                                                <core:Icon id="sortIcon_type" src="sap-icon://sort-ascending" press=".onSortType" tooltip="Sort Type" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Request Creation Date -->
+                                    <Column id="_IDGenColumn3" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="requestCreationDate"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox3" alignItems="Center">
+                                                <Text id="requestCreationDateHeader" text="Request Creation Date" wrapping="true" />
+                                                <core:Icon id="sortIcon_requestCreationDate" src="sap-icon://sort-ascending" press=".onSortRequestCreationDate" tooltip="Sort Request Creation Date" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Request Aging -->
+                                    <Column id="_IDGenColumn4" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="requestAging"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox4" alignItems="Center">
+                                                <Text id="requestAgingHeader" text="Request Aging" wrapping="true" />
+                                                <core:Icon id="sortIcon_requestAging" src="sap-icon://sort-ascending" press=".onSortRequestAging" tooltip="Sort Request Aging" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Last Action Date -->
+                                    <Column id="_IDGenColumn5" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="lastActionDate"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox5" alignItems="Center">
+                                                <Text id="lastActionDateHeader" text="Last Action Date" wrapping="true" />
+                                                <core:Icon id="sortIcon_lastActionDate" src="sap-icon://sort-ascending" press=".onSortLastActionDate" tooltip="Sort Last Action Date" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Last Action Aging -->
+                                    <Column id="_IDGenColumn6" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="lastActionAging"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox6" alignItems="Center">
+                                                <Text id="lastActionAgingHeader" text="Last Action Aging" wrapping="true" />
+                                                <core:Icon id="sortIcon_lastActionAging" src="sap-icon://sort-ascending" press=".onSortLastActionAging" tooltip="Sort Last Action Aging" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Stage -->
+                                    <Column id="_IDGenColumn7" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="stage"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox7" alignItems="Center">
+                                                <Text id="stageHeader" text="Stage" wrapping="true" />
+                                                <core:Icon id="sortIcon_stage" src="sap-icon://sort-ascending" press=".onSortStage" tooltip="Sort Stage" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                    <!-- Status -->
+                                    <Column id="_IDGenColumn8" minScreenWidth="Tablet" demandPopin="true">
+                                        <customData>
+                                            <core:CustomData key="columnKey" value="status"/>
+                                        </customData>
+                                        <header>
+                                            <HBox id="_IDGenHBox8" alignItems="Center">
+                                                <Text id="statusHeader" text="Status" wrapping="true" />
+                                                <core:Icon id="sortIcon_status" src="sap-icon://sort-ascending" press=".onSortStatus" tooltip="Sort Status" />
+                                            </HBox>
+                                        </header>
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem id="_IDGenColumnListItem">
+                                        <cells>
+                                            <Text id="_IDGenText1" text="{products>supplierRequestId}" />
+                                            <Text id="_IDGenText2" text="{products>supplierName}" wrapping="true" />
+                                            <Text id="_IDGenText3" text="{products>type}" />
+                                            <Text id="_IDGenText4" text="{products>requestCreationDate}" />
+                                            <Text id="_IDGenText5" text="{products>requestAging}" />
+                                            <Text id="_IDGenText6" text="{products>lastActionDate}" />
+                                            <Text id="_IDGenText7" text="{products>lastActionAging}" />
+                                            <Text id="_IDGenText8" text="{products>stage}" />
+                                            <ObjectStatus id="_IDGenObjectStatus"
+                                                text="{products>status}"
+                                                state="{= ${products>status} === 'APPROVED' ? 'Success' : ${products>status} === 'VENDOR CREATED' ? 'Success' : ${products>status} === 'FINANCE UPDATE PENDING' ? 'Warning' : ${products>status} === 'PENDING' ? 'Warning' : ${products>status} === 'CMDM UPDATE PENDING' ? 'Warning' : ${products>status} === 'CANCELLED' ? 'Error' : 'None'}" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </l:VerticalLayout>
+                    </content>
+                </Panel>
+
+                <!-- New Supplier Request Form Dialog -->
+                <Dialog id="newSupplierDialog" title="New Supplier Request Form" contentWidth="600px" contentHeight="400px" draggable="true" resizable="true">
+                    <content>
+                        <l:VerticalLayout id="newSupplierFormLayout" width="100%" class="sapUiSmallMargin">
+                            <!-- Step Indicator -->
+                            <HBox id="stepIndicator" class="sapUiSmallMargin">
+                                <Text id="step1" text="1" class="stepNumber inactiveStep sapUiTinyMarginEnd" />
+                                <Text id="step2" text="2 Supplier Type" class="stepText inactiveStep sapUiTinyMarginEnd" />
+                                <Text id="step3" text="3" class="stepNumber activeStep sapUiTinyMarginEnd" />
+                                <Text id="step3Text" text="GST & PAN VERIFICATION" class="stepText activeStep sapUiTinyMarginEnd" />
+                            </HBox>
+
+                            <!-- Form Fields -->
+                            <l:Grid id="formGrid" defaultSpan="XL6 L6 M12 S12" class="sapUiSmallMargin">
+                                <Label id="gstinLabel" text="GSTIN No. :" required="true" class="sapUiTinyMarginEnd" />
+                                <Input id="gstinInput" value="{newSupplier>/gstin}" placeholder="Enter GSTIN No." width="100%" />
+                                <Button id="verifyButton" text="Verify" press=".onVerifyPress" type="Emphasized" class="sapUiTinyMarginBegin" />
+
+                                <Label id="panLabel" text="PAN Card No. :" required="true" class="sapUiTinyMarginEnd" />
+                                <Input id="panInput" value="{newSupplier>/pan}" placeholder="Enter PAN Card No." width="100%" />
+
+                                <Label id="dunsLabel" text="DUNS NUMBER" class="sapUiTinyMarginEnd" />
+                                <Input id="dunsInput" value="{newSupplier>/duns}" placeholder="Enter DUNS Number" width="100%" />
+
+                                <Label id="addressLabel" text="Address" class="sapUiTinyMarginEnd" />
+                                <TextArea id="addressInput" value="{newSupplier>/address}" placeholder="Enter Address" rows="3" width="100%" />
+                            </l:Grid>
+                        </l:VerticalLayout>
+                    </content>
+                    <beginButton>
+                        <Button id="previousStepButton" text="Previous Step" press=".onPreviousStepPress" type="Default" />
+                    </beginButton>
+                    <endButton>
+                        <Button id="proceedButton" text="Proceed" press=".onProceedPress" type="Emphasized" />
+                        <Button id="cancelButton" text="Cancel" press=".onCancelPress" type="Reject" />
+                    </endButton>
+                </Dialog>
+            </Page>
+        </f:beginColumnPages>
+    </f:FlexibleColumnLayout>
+</mvc:View>
