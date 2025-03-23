@@ -55,15 +55,13 @@ sap.ui.define([
                 gstin: "27AICR9957Q1ZC",
                 pan: "AAICR9957Q",
                 duns: "",
-                address: "Business Park, Vidyavihar West, Kiroli Village, Mumbai, 400086"
+                address: "Business Park, Vidyavihar West, Kiroli Village, Mumbai, 400086",
+                isVerified: false // Add a flag to track verification status
             };
             var oNewSupplierModel = new JSONModel(oNewSupplierData);
             this.getView().setModel(oNewSupplierModel, "newSupplier");
 
             this._addCustomCSS();
-
-            // Removed the direct manipulation of verifyButton here
-            // It will be handled in onOrderPress when the dialog is opened
         },
 
         _addCustomCSS: function () {
@@ -632,29 +630,77 @@ sap.ui.define([
             // Set the "Verify" button state after the dialog is opened
             var oVerifyButton = this.byId("verifyButton");
             if (oVerifyButton) {
-                oVerifyButton.setText("Verified");
-                oVerifyButton.setType("Success");
-                oVerifyButton.setEnabled(false);
+                var oNewSupplierModel = this.getView().getModel("newSupplier");
+                var oNewSupplierData = oNewSupplierModel.getData();
+
+                // Check if the GSTIN and PAN match the mock verification logic
+                if (oNewSupplierData.gstin === "27AICR9957Q1ZC" && oNewSupplierData.pan === "AAICR9957Q") {
+                    oVerifyButton.setText("Verified");
+                    oVerifyButton.setType("Success");
+                    oVerifyButton.setEnabled(false);
+                    oNewSupplierModel.setProperty("/isVerified", true);
+                } else {
+                    oVerifyButton.setText("Verify");
+                    oVerifyButton.setType("Emphasized");
+                    oVerifyButton.setEnabled(true);
+                    oNewSupplierModel.setProperty("/isVerified", false);
+                }
             }
         },
 
         onVerifyPress: function () {
-            var sGstin = this.byId("gstinInput").getValue();
-            var sPan = this.byId("panInput").getValue();
+            var oGstinInput = this.byId("gstinInput");
+            var oPanInput = this.byId("panInput");
+            var sGstin = oGstinInput.getValue().trim();
+            var sPan = oPanInput.getValue().trim();
+            var oVerifyButton = this.byId("verifyButton");
+            var oNewSupplierModel = this.getView().getModel("newSupplier");
 
-            if (!sGstin || !sPan) {
-                MessageToast.show("Please enter both GSTIN and PAN Card No. to verify.");
+            // Validate GSTIN format (15 characters, specific pattern)
+            var gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            if (!sGstin) {
+                oGstinInput.setValueState("Error");
+                oGstinInput.setValueStateText("GSTIN No. is required.");
+                MessageToast.show("Please enter a GSTIN No.");
                 return;
+            } else if (!gstinRegex.test(sGstin)) {
+                oGstinInput.setValueState("Error");
+                oGstinInput.setValueStateText("Invalid GSTIN format. It should be 15 characters (e.g., 27AICR9957Q1ZC).");
+                MessageToast.show("Please enter a valid GSTIN No.");
+                return;
+            } else {
+                oGstinInput.setValueState("None");
+            }
+
+            // Validate PAN format (10 characters, specific pattern)
+            var panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (!sPan) {
+                oPanInput.setValueState("Error");
+                oPanInput.setValueStateText("PAN Card No. is required.");
+                MessageToast.show("Please enter a PAN Card No.");
+                return;
+            } else if (!panRegex.test(sPan)) {
+                oPanInput.setValueState("Error");
+                oPanInput.setValueStateText("Invalid PAN format. It should be 10 characters (e.g., AAICR9957Q).");
+                MessageToast.show("Please enter a valid PAN Card No.");
+                return;
+            } else {
+                oPanInput.setValueState("None");
             }
 
             // Mock verification logic (replace with actual API call if needed)
             if (sGstin === "27AICR9957Q1ZC" && sPan === "AAICR9957Q") {
                 MessageToast.show("GSTIN and PAN verified successfully!");
-                this.byId("verifyButton").setText("Verified");
-                this.byId("verifyButton").setType("Success");
-                this.byId("verifyButton").setEnabled(false);
+                oVerifyButton.setText("Verified");
+                oVerifyButton.setType("Success");
+                oVerifyButton.setEnabled(false);
+                oNewSupplierModel.setProperty("/isVerified", true);
             } else {
                 MessageToast.show("Verification failed. Please check the GSTIN and PAN Card No.");
+                oVerifyButton.setText("Verify");
+                oVerifyButton.setType("Emphasized");
+                oVerifyButton.setEnabled(true);
+                oNewSupplierModel.setProperty("/isVerified", false);
             }
         },
 
@@ -667,8 +713,14 @@ sap.ui.define([
             var oNewSupplierModel = this.getView().getModel("newSupplier");
             var oNewSupplierData = oNewSupplierModel.getData();
 
+            // Check if GSTIN and PAN are filled and verified
             if (!oNewSupplierData.gstin || !oNewSupplierData.pan) {
                 MessageToast.show("Please fill in all required fields (GSTIN and PAN Card No.) before proceeding.");
+                return;
+            }
+
+            if (!oNewSupplierData.isVerified) {
+                MessageToast.show("Please verify the GSTIN and PAN Card No. before proceeding.");
                 return;
             }
 
@@ -711,7 +763,8 @@ sap.ui.define([
                 gstin: "",
                 pan: "",
                 duns: "",
-                address: ""
+                address: "",
+                isVerified: false
             });
             this.byId("verifyButton").setText("Verify");
             this.byId("verifyButton").setType("Emphasized");
@@ -728,7 +781,8 @@ sap.ui.define([
                 gstin: "",
                 pan: "",
                 duns: "",
-                address: ""
+                address: "",
+                isVerified: false
             });
             this.byId("verifyButton").setText("Verify");
             this.byId("verifyButton").setType("Emphasized");
