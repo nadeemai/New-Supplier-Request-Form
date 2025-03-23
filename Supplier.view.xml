@@ -251,7 +251,7 @@
                     <endButton>
                         <Button id="proceedButton" text="Proceed" press=".onProceedPress" type="Emphasized" />
                         <Button id="cancelButton" text="Cancel" press=".onCancelPress" type="Reject" />
-                    </endButton>
+                    </endButton> 
                 </Dialog>
             </Page>
         </f:beginColumnPages>
