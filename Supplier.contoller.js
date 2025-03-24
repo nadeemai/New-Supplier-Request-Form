@@ -63,233 +63,441 @@ sap.ui.define([
             var oNewSupplierModel = new JSONModel(oNewSupplierData);
             this.getView().setModel(oNewSupplierModel, "newSupplier");
 
+            // Initialize the verification model
+            var oVerificationData = {
+                gstin: "",
+                pan: "",
+                duns: "",
+                isVerified: false,
+                duplicateVendor: {
+                    V0001: false,
+                    V0002: false,
+                    V0003: false
+                },
+                duplicateReason: "",
+                differentAddress: ""
+            };
+            var oVerificationModel = new JSONModel(oVerificationData);
+            this.getView().setModel(oVerificationModel, "verification");
+
             this._addCustomCSS();
         },
 
         _addCustomCSS: function () {
             var sStyle = `
-                .centeredGrid {
-                    display: flex;
-                    justify-content: center;
-                    flex-wrap: wrap;
-                }
-                .tileLayout {
-                    min-width: 150px;
-                    text-align: center;
-                }
-                #_IDGenToolbar {
-                    background-color: #f7f7f7;
-                    padding: 5px 10px;
-                    border-bottom: 1px solid #d9d9d9;
-                    display: flex;
-                    align-items: center;
-                    width: 100%;
-                }
-                #_IDGenToolbar .sapMLabel {
-                    font-weight: bold;
-                    color: #333;
-                    margin-right: 5px;
-                    white-space: nowrap;
-                    overflow: visible;
-                    text-overflow: clip;
-                    min-width: 120px;
-                }
-                #_IDGenToolbar .sapMInputBaseInner {
-                    padding: 0 5px;
-                    width: 100%;
-                    min-width: 150px;
-                }
-                #_IDGenToolbar .sapMComboBox {
-                    padding: 0 5px;
-                    width: 100%;
-                    min-width: 150px;
-                }
-                #_IDGenToolbar .sapMBtn {
-                    margin-left: 5px;
-                    padding: 5px 10px;
-                    min-width: 150px;
-                }
-                #_IDGenToolbar .sapMTBSpacer {
-                    flex-grow: 1;
-                }
-                #actionToolbar {
-                    background-color: #f7f7f7;
-                    padding: 5px 10px;
-                    border-bottom: 1px solid #d9d9d9;
-                    display: flex;
-                    align-items: center;
-                    width: 100%;
-                }
-                #actionToolbar .sapMBtn {
-                    margin-left: 5px;
-                    padding: 5px 10px;
-                    min-width: 150px;
-                }
-                .sapMText {
-                    visibility: visible !important;
-                    white-space: normal !important;
-                    overflow: visible !important;
-                    text-overflow: clip !important;
-                }
-                .sapMListTblHeader .sapMText {
-                    font-weight: bold;
-                    color: #333;
-                    padding: 5px;
-                }
-                .sapMListTblCell {
-                    min-width: 120px;
-                }
-                .sapUiIcon {
-                    margin-left: 5px;
-                    cursor: pointer;
-                }
-                .sapUiIcon[id*="sortIcon_"] {
-                    color: #ff0000 !important;
-                }
-                .stepNumber {
-                    width: 20px;
-                    height: 20px;
-                    border-radius: 50%;
-                    text-align: center;
-                    line-height: 20px;
-                    font-size: 12px;
-                }
-                .stepText {
-                    font-size: 12px;
-                    line-height: 20px;
-                }
-                .inactiveStep {
-                    background-color: #d3d3d3;
-                    color: #666;
-                }
-                .activeStep {
-                    background-color: #ff0000;
-                    color: #fff;
-                }
-                .activeStep.stepText {
-                    background-color: transparent;
-                    color: #000;
-                    font-weight: bold;
-                }
-                .form-container {
-                    padding: 20px;
-                    max-width: 600px;
-                    margin: 0 auto;
-                    border: 1px solid #d9d9d9;
-                    border-radius: 8px;
-                    background-color: #fff;
-                }
-                .header {
-                    background-color: #ff0000;
-                    color: #fff;
-                    padding: 10px;
-                    text-align: center;
-                    border-top-left-radius: 8px;
-                    border-top-right-radius: 8px;
-                }
-                .step-indicator {
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 20px;
-                }
-                .form-field {
-                    margin-bottom: 15px;
-                }
-                .form-field label {
-                    display: block;
-                    font-weight: bold;
-                    margin-bottom: 5px;
-                }
-                .form-field input, .form-field textarea, .form-field select {
-                    width: 100%;
-                    padding: 8px;
-                    border: 1px solid #d9d9d9;
-                    border-radius: 4px;
-                }
-                .form-field button {
-                    padding: 8px 16px;
-                    margin-left: 10px;
-                    background-color: #0070f0;
-                    color: #fff;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                .form-field button:disabled {
-                    background-color: #d3d3d3;
-                    cursor: not-allowed;
-                }
-                .form-field .verified {
-                    background-color: #28a745;
-                }
-                .buttons {
-                    display: flex;
-                    justify-content: flex-end;
-                    gap: 10px;
-                    margin-top: 20px;
-                }
-                .buttons button {
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    cursor: pointer;
-                }
-                .buttons .proceed {
-                    background-color: #0070f0;
-                    color: #fff;
-                    border: none;
-                }
-                .buttons .cancel {
-                    background-color: #fff;
-                    color: #ff0000;
-                    border: 1px solid #ff0000;
-                }
-                .buttons .previous {
-                    background-color: #fff;
-                    color: #000;
-                    border: 1px solid #d9d9d9;
-                }
-                .error {
-                    border-color: #ff0000 !important;
-                }
-                .error-message {
-                    color: #ff0000;
-                    font-size: 12px;
-                    margin-top: 5px;
-                }
-                .duplicate-warning {
-                    color: #ff0000;
-                    margin-bottom: 15px;
-                    display: flex;
-                    align-items: center;
-                }
-                .duplicate-warning::before {
-                    content: "⚠️";
-                    margin-right: 5px;
-                }
-                .duplicate-table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-bottom: 15px;
-                }
-                .duplicate-table th, .duplicate-table td {
-                    border: 1px solid #d9d9d9;
-                    padding: 8px;
-                    text-align: left;
-                }
-                .duplicate-table th {
-                    background-color: #f7f7f7;
-                }
-                .duplicate-table input[type="radio"] {
-                    margin-right: 5px;
-                }
-                .reason-field {
-                    margin-top: 10px;
-                }
+                .centeredGrid { display: flex; justify-content: center; flex-wrap: wrap; }
+                .tileLayout { min-width: 150px; text-align: center; }
+                #_IDGenToolbar { background-color: #f7f7f7; padding: 5px 10px; border-bottom: 1px solid #d9d9d9; display: flex; align-items: center; width: 100%; }
+                #_IDGenToolbar .sapMLabel { font-weight: bold; color: #333; margin-right: 5px; white-space: nowrap; overflow: visible; text-overflow: clip; min-width: 120px; }
+                #_IDGenToolbar .sapMInputBaseInner { padding: 0 5px; width: 100%; min-width: 150px; }
+                #_IDGenToolbar .sapMComboBox { padding: 0 5px; width: 100%; min-width: 150px; }
+                #_IDGenToolbar .sapMBtn { margin-left: 5px; padding: 5px 10px; min-width: 150px; }
+                #_IDGenToolbar .sapMTBSpacer { flex-grow: 1; }
+                #actionToolbar { background-color: #f7f7f7; padding: 5px 10px; border-bottom: 1px solid #d9d9d9; display: flex; align-items: center; width: 100%; }
+                #actionToolbar .sapMBtn { margin-left: 5px; padding: 5px 10px; min-width: 150px; }
+                .sapMText { visibility: visible !important; white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+                .sapMListTblHeader .sapMText { font-weight: bold; color: #333; padding: 5px; }
+                .sapMListTblCell { min-width: 120px; }
+                .sapUiIcon { margin-left: 5px; cursor: pointer; }
+                .sapUiIcon[id*="sortIcon_"] { color: #ff0000 !important; }
+                .stepNumber { width: 20px; height: 20px; border-radius: 50%; text-align: center; line-height: 20px; font-size: 12px; }
+                .stepText { font-size: 12px; line-height: 20px; }
+                .inactiveStep { background-color: #d3d3d3; color: #666; }
+                .activeStep { background-color: #ff0000; color: #fff; }
+                .activeStep.stepText { background-color: transparent; color: #000; font-weight: bold; }
+                .form-container { padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #d9d9d9; border-radius: 8px; background-color: #fff; }
+                .header { background-color: #ff0000; color: #fff; padding: 10px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+                .step-indicator { display: flex; align-items: center; margin-bottom: 20px; }
+                .form-field { margin-bottom: 15px; }
+                .form-field label { display: block; font-weight: bold; margin-bottom: 5px; }
+                .form-field input, .form-field textarea, .form-field select { width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; }
+                .form-field button { padding: 8px 16px; margin-left: 10px; background-color: #0070f0; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                .form-field button:disabled { background-color: #d3d3d3; cursor: not-allowed; }
+                .form-field .verified { background-color: #28a745; }
+                .buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+                .buttons button { padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+                .buttons .proceed { background-color: #0070f0; color: #fff; border: none; }
+                .buttons .cancel { background-color: #fff; color: #ff0000; border: 1px solid #ff0000; }
+                .buttons .previous { background-color: #fff; color: #000; border: 1px solid #d9d9d9; }
+                .error { border-color: #ff0000 !important; }
+                .error-message { color: #ff0000; font-size: 12px; margin-top: 5px; }
+                .duplicate-warning { color: #ff0000; margin-bottom: 15px; display: flex; align-items: center; }
+                .duplicate-warning::before { content: "⚠️"; margin-right: 5px; }
+                .duplicate-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                .duplicate-table th, .duplicate-table td { border: 1px solid #d9d9d9; padding: 8px; text-align: left; }
+                .duplicate-table th { background-color: #f7f7f7; }
+                .duplicate-table .sapMRb { margin-right: 5px; }
+                .reason-field { margin-top: 10px; }
+                .detailed-form-container { padding: 20px; max-width: 800px; margin: 20px auto; border: 1px solid #d9d9d9; border-radius: 8px; background-color: #fff; }
+                .section-header { background-color: #ff0000; color: #fff; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
+                .form-section { margin-bottom: 20px; }
+                .form-section label { display: block; font-weight: bold; margin-bottom: 5px; }
+                .form-section input, .form-section select, .form-section textarea { width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; box-sizing: border-box; }
+                .form-section .radio-group { display: flex; gap: 10px; margin-top: 5px; }
             `;
             var oStyle = document.createElement("style");
             oStyle.type = "text/css";
             oStyle.innerHTML = sStyle;
             document.getElementsByTagName("head")[0].appendChild(oStyle);
+        },
+
+        onVerifyGSTINAndPAN: function () {
+            var oVerificationModel = this.getView().getModel("verification");
+            var oGstinInput = this.byId("gstinInput");
+            var oPanInput = this.byId("panInput");
+            var oDunsInput = this.byId("dunsInput");
+            var oVerifyButton = this.byId("verifyButton");
+
+            // Get values
+            var sGstin = oGstinInput.getValue().trim();
+            var sPan = oPanInput.getValue().trim();
+            var sDuns = oDunsInput.getValue().trim();
+
+            // Validate GSTIN format
+            const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            if (!sGstin) {
+                oGstinInput.setValueState("Error");
+                oGstinInput.setValueStateText("GSTIN No. is required.");
+                return;
+            } else if (!gstinRegex.test(sGstin)) {
+                oGstinInput.setValueState("Error");
+                oGstinInput.setValueStateText("Invalid GSTIN format. It should be 15 characters (e.g., 27AABCU9603R1ZM).");
+                return;
+            } else {
+                oGstinInput.setValueState("None");
+            }
+
+            // Validate PAN format
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (!sPan) {
+                oPanInput.setValueState("Error");
+                oPanInput.setValueStateText("PAN Card No. is required.");
+                return;
+            } else if (!panRegex.test(sPan)) {
+                oPanInput.setValueState("Error");
+                oPanInput.setValueStateText("Invalid PAN format. It should be 10 characters (e.g., AABCU9603R).");
+                return;
+            } else {
+                oPanInput.setValueState("None");
+            }
+
+            // Validate DUNS format (9 digits)
+            const dunsRegex = /^\d{9}$/;
+            if (!sDuns) {
+                oDunsInput.setValueState("Error");
+                oDunsInput.setValueStateText("DUNS Number is required.");
+                return;
+            } else if (!dunsRegex.test(sDuns)) {
+                oDunsInput.setValueState("Error");
+                oDunsInput.setValueStateText("Invalid DUNS format. It should be 9 digits (e.g., 123456789).");
+                return;
+            } else {
+                oDunsInput.setValueState("None");
+            }
+
+            // Mock verification logic with multiple valid examples
+            const validCredentials = [
+                { gstin: "27AABCU9603R1ZM", pan: "AABCU9603R", duns: "123456789" },
+                { gstin: "29AAGCM1234P1ZT", pan: "AAGCM1234P", duns: "987654321" },
+                { gstin: "33AAHCP7890N1ZF", pan: "AAHCP7890N", duns: "456789123" }
+            ];
+
+            const isValid = validCredentials.some(cred => 
+                cred.gstin === sGstin && cred.pan === sPan && cred.duns === sDuns
+            );
+
+            if (isValid) {
+                oVerifyButton.setText("Verified");
+                oVerifyButton.addStyleClass("verified");
+                oVerifyButton.setEnabled(false);
+                oVerificationModel.setProperty("/isVerified", true);
+                oVerificationModel.setProperty("/gstin", sGstin);
+                oVerificationModel.setProperty("/pan", sPan);
+                oVerificationModel.setProperty("/duns", sDuns);
+                MessageToast.show("GSTIN, PAN, and DUNS verified successfully!");
+                this.openDetailedSupplierForm(sGstin, sPan, sDuns);
+            } else {
+                oVerifyButton.setText("Verify");
+                oVerifyButton.removeStyleClass("verified");
+                oVerifyButton.setEnabled(true);
+                oVerificationModel.setProperty("/isVerified", false);
+                MessageToast.show("Verification failed. Please check the GSTIN, PAN Card No., and DUNS Number.");
+            }
+        },
+
+        openDetailedSupplierForm: function (sGstin, sPan, sDuns) {
+            var sHtmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supplier Request Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .detailed-form-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 20px auto;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .header {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        .section-header {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .form-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-section input, .form-section select, .form-section textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-section .radio-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .buttons button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .buttons .submit {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+        .buttons .cancel {
+            background-color: #fff;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="detailed-form-container">
+        <div class="header">SUPPLIER REQUEST FORM 0.0</div>
+
+        <!-- Supplier Survey Section -->
+        <div class="form-section">
+            <div class="section-header">SUPPLIER SURVEY</div>
+            <div>
+                <label>Survey ID:</label>
+                <input type="text" id="surveyId" placeholder="Enter Survey ID">
+            </div>
+            <div>
+                <label>Local/Global:</label>
+                <select id="localGlobal">
+                    <option value="">Select</option>
+                    <option value="Local">Local</option>
+                    <option value="Global">Global</option>
+                </select>
+            </div>
+            <div>
+                <label>Local/Global Supplier:</label>
+                <select id="localGlobalSupplier">
+                    <option value="">Select</option>
+                    <option value="Local">Local</option>
+                    <option value="Global">Global</option>
+                </select>
+            </div>
+            <div>
+                <label>Requestor is Vendor Creation Code:</label>
+                <input type="text" id="requestorVendorCode" placeholder="Enter Requestor Code">
+            </div>
+            <div>
+                <label>Is MSTD a party vendor creation:</label>
+                <div class="radio-group">
+                    <input type="radio" name="mstdParty" value="Yes"> Yes
+                    <input type="radio" name="mstdParty" value="No"> No
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirement Section -->
+        <div class="form-section">
+            <div class="section-header">REQUIREMENT</div>
+            <div>
+                <label>Please Enter DUNS:</label>
+                <input type="text" id="dunsRequirement" value="${sDuns}" readonly>
+            </div>
+            <div>
+                <label>Address:</label>
+                <textarea id="address" placeholder="Enter Address" rows="3"></textarea>
+            </div>
+            <div>
+                <label>Additional Comments:</label>
+                <textarea id="comments" placeholder="Enter Comments" rows="3"></textarea>
+            </div>
+        </div>
+
+        <!-- Acknowledgement Section -->
+        <div class="form-section">
+            <div class="section-header">ACKNOWLEDGEMENT</div>
+            <div>
+                <label>Supplier Full Name:</label>
+                <input type="text" id="supplierFullName" placeholder="Enter Supplier Full Name">
+            </div>
+            <div>
+                <label>Address:</label>
+                <input type="text" id="ackAddress" placeholder="Enter Address">
+            </div>
+            <div>
+                <label>Phone No.:</label>
+                <input type="text" id="ackPhone" placeholder="Enter Phone Number">
+            </div>
+        </div>
+
+        <!-- Primary Supplier Contact Section -->
+        <div class="form-section">
+            <div class="section-header">PRIMARY SUPPLIER CONTACT</div>
+            <div>
+                <label>Contact Name:</label>
+                <input type="text" id="contactName" placeholder="Enter Contact Name">
+            </div>
+            <div>
+                <label>Phone No.:</label>
+                <input type="text" id="contactPhone" placeholder="Enter Phone Number">
+            </div>
+            <div>
+                <label>Email:</label>
+                <input type="email" id="contactEmail" placeholder="Enter Email">
+            </div>
+        </div>
+
+        <!-- General Supplier Information Section -->
+        <div class="form-section">
+            <div class="section-header">GENERAL SUPPLIER INFORMATION</div>
+            <div>
+                <label>Is Supplier Interested in Bidding?:</label>
+                <div class="radio-group">
+                    <input type="radio" name="interestedBidding" value="Yes"> Yes
+                    <input type="radio" name="interestedBidding" value="No"> No
+                </div>
+            </div>
+            <div>
+                <label>Is Supplier Interested in E-Bidding?:</label>
+                <div class="radio-group">
+                    <input type="radio" name="interestedEBidding" value="Yes"> Yes
+                    <input type="radio" name="interestedEBidding" value="No"> No
+                </div>
+            </div>
+            <div>
+                <label>Supplier Supports E-Invoicing?:</label>
+                <div class="radio-group">
+                    <input type="radio" name="supportsEInvoicing" value="Yes"> Yes
+                    <input type="radio" name="supportsEInvoicing" value="No"> No
+                </div>
+            </div>
+            <div>
+                <label>Supplier Supports E-Ordering?:</label>
+                <div class="radio-group">
+                    <input type="radio" name="supportsEOrdering" value="Yes"> Yes
+                    <input type="radio" name="supportsEOrdering" value="No"> No
+                </div>
+            </div>
+        </div>
+
+        <!-- Purchasing Organization Information Section -->
+        <div class="form-section">
+            <div class="section-header">PURCHASING ORGANIZATION INFORMATION</div>
+            <div>
+                <label>Additional Purchasing Organization:</label>
+                <select id="additionalPurchOrg">
+                    <option value="">Select</option>
+                    <option value="Org1">Org1</option>
+                    <option value="Org2">Org2</option>
+                </select>
+            </div>
+            <div>
+                <label>Please select the purchasing group:</label>
+                <select id="purchasingGroup">
+                    <option value="">Select</option>
+                    <option value="Group1">Group1</option>
+                    <option value="Group2">Group2</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Payee/Terms Section -->
+        <div class="form-section">
+            <div class="section-header">PAYEE/TERMS</div>
+            <div>
+                <label>Payment Terms:</label>
+                <select id="paymentTerms">
+                    <option value="">Select</option>
+                    <option value="Net 30">Net 30</option>
+                    <option value="Net 60">Net 60</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="submit" onclick="submitForm()">Submit</button>
+            <button class="cancel" onclick="cancel()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        function submitForm() {
+            alert("Supplier Request Form submitted successfully!");
+            window.close();
+        }
+
+        function cancel() {
+            if (confirm("Are you sure you want to cancel? All unsaved changes will be lost.")) {
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>
+            `;
+
+            var newWindow = window.open("", "_blank");
+            if (newWindow) {
+                newWindow.document.write(sHtmlContent);
+                newWindow.document.close();
+            } else {
+                MessageToast.show("Failed to open new tab. Please allow pop-ups for this site.");
+            }
+        },
+
+        onDifferentAddressSelect: function (sValue) {
+            var oVerificationModel = this.getView().getModel("verification");
+            oVerificationModel.setProperty("/differentAddress", sValue);
         },
 
         _updateTileCounts: function (oData) {
@@ -739,7 +947,6 @@ sap.ui.define([
         },
 
         onOrderPress: function () {
-            // Open the new supplier form in a new tab
             var oNewSupplierModel = this.getView().getModel("newSupplier");
             oNewSupplierModel.setProperty("/currentStep", 1);
             oNewSupplierModel.setProperty("/spendType", "");
@@ -750,7 +957,6 @@ sap.ui.define([
             oNewSupplierModel.setProperty("/address", "");
             oNewSupplierModel.setProperty("/isVerified", false);
 
-            // Generate the HTML content for the new tab
             var sHtmlContent = `
 <!DOCTYPE html>
 <html lang="en">
@@ -1009,8 +1215,9 @@ sap.ui.define([
                     <div id="panError" class="error-message" style="display: none;"></div>
                 </div>
                 <div class="form-field">
-                    <label for="duns">DUNS NUMBER</label>
+                    <label for="duns">DUNS NUMBER: <span style="color: #ff0000;">*</span></label>
                     <input type="text" id="duns" placeholder="Enter DUNS Number">
+                    <div id="dunsError" class="error-message" style="display: none;"></div>
                 </div>
                 <div class="form-field">
                     <label for="address">Address</label>
@@ -1098,6 +1305,7 @@ sap.ui.define([
         function verifyGSTINAndPAN() {
             formData.gstin = document.getElementById("gstin").value.trim();
             formData.pan = document.getElementById("pan").value.trim();
+            formData.duns = document.getElementById("duns").value.trim();
 
             // Validate GSTIN format
             const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -1108,7 +1316,7 @@ sap.ui.define([
                 return;
             } else if (!gstinRegex.test(formData.gstin)) {
                 document.getElementById("gstin").classList.add("error");
-                document.getElementById("gstinError").textContent = "Invalid GSTIN format. It should be 15 characters (e.g., 27AICR9957Q1ZC).";
+                document.getElementById("gstinError").textContent = "Invalid GSTIN format. It should be 15 characters (e.g., 27AABCU9603R1ZM).";
                 document.getElementById("gstinError").style.display = "block";
                 return;
             } else {
@@ -1125,7 +1333,7 @@ sap.ui.define([
                 return;
             } else if (!panRegex.test(formData.pan)) {
                 document.getElementById("pan").classList.add("error");
-                document.getElementById("panError").textContent = "Invalid PAN format. It should be 10 characters (e.g., AAICR9957Q).";
+                document.getElementById("panError").textContent = "Invalid PAN format. It should be 10 characters (e.g., AABCU9603R).";
                 document.getElementById("panError").style.display = "block";
                 return;
             } else {
@@ -1133,27 +1341,54 @@ sap.ui.define([
                 document.getElementById("panError").style.display = "none";
             }
 
-            // Mock verification logic
-            if (formData.gstin === "27AICR9957Q1ZC" && formData.pan === "AAICR9957Q") {
+            // Validate DUNS format
+            const dunsRegex = /^\d{9}$/;
+            if (!formData.duns) {
+                document.getElementById("duns").classList.add("error");
+                document.getElementById("dunsError").textContent = "DUNS Number is required.";
+                document.getElementById("dunsError").style.display = "block";
+                return;
+            } else if (!dunsRegex.test(formData.duns)) {
+                document.getElementById("duns").classList.add("error");
+                document.getElementById("dunsError").textContent = "Invalid DUNS format. It should be 9 digits (e.g., 123456789).";
+                document.getElementById("dunsError").style.display = "block";
+                return;
+            } else {
+                document.getElementById("duns").classList.remove("error");
+                document.getElementById("dunsError").style.display = "none";
+            }
+
+            // Mock verification logic with multiple valid examples
+            const validCredentials = [
+                { gstin: "27AABCU9603R1ZM", pan: "AABCU9603R", duns: "123456789" },
+                { gstin: "29AAGCM1234P1ZT", pan: "AAGCM1234P", duns: "987654321" },
+                { gstin: "33AAHCP7890N1ZF", pan: "AAHCP7890N", duns: "456789123" }
+            ];
+
+            const isValid = validCredentials.some(cred => 
+                cred.gstin === formData.gstin && cred.pan === formData.pan && cred.duns === formData.duns
+            );
+
+            if (isValid) {
                 document.getElementById("verifyButton").textContent = "Verified";
                 document.getElementById("verifyButton").classList.add("verified");
                 document.getElementById("verifyButton").disabled = true;
                 isVerified = true;
                 formData.isVerified = true;
                 checkForDuplicates();
-                alert("GSTIN and PAN verified successfully!");
+                alert("GSTIN, PAN, and DUNS verified successfully!");
             } else {
                 document.getElementById("verifyButton").textContent = "Verify";
                 document.getElementById("verifyButton").classList.remove("verified");
                 document.getElementById("verifyButton").disabled = false;
                 isVerified = false;
                 formData.isVerified = false;
-                alert("Verification failed. Please check the GSTIN and PAN Card No.");
+                alert("Verification failed. Please check the GSTIN, PAN Card No., and DUNS Number.");
             }
         }
 
         function checkForDuplicates() {
-            if (formData.gstin === "27AICR9957Q1ZC" && formData.pan === "AAICR9957Q") {
+            if (formData.gstin === "27AABCU9603R1ZM" && formData.pan === "AABCU9603R") {
                 document.getElementById("duplicateWarning").style.display = "block";
                 document.getElementById("duplicateTable").style.display = "table";
                 document.getElementById("reasonField").style.display = "block";
@@ -1177,17 +1412,17 @@ sap.ui.define([
             formData.duplicateReason = document.getElementById("duplicateReason")?.value.trim() || "";
             formData.differentAddress = document.querySelector('input[name="differentAddress"]:checked')?.value || "";
 
-            if (!formData.gstin || !formData.pan) {
-                alert("Please fill in all required fields (GSTIN and PAN Card No.) before proceeding.");
+            if (!formData.gstin || !formData.pan || !formData.duns) {
+                alert("Please fill in all required fields (GSTIN, PAN Card No., and DUNS Number) before proceeding.");
                 return;
             }
 
             if (!formData.isVerified) {
-                alert("Please verify the GSTIN and PAN Card No. before proceeding.");
+                alert("Please verify the GSTIN, PAN Card No., and DUNS Number before proceeding.");
                 return;
             }
 
-            if (formData.gstin === "27AICR9957Q1ZC" && formData.pan === "AAICR9957Q") {
+            if (formData.gstin === "27AABCU9603R1ZM" && formData.pan === "AABCU9603R") {
                 if (!formData.duplicateVendor) {
                     alert("Please select a duplicate vendor.");
                     return;
@@ -1231,13 +1466,11 @@ sap.ui.define([
 </html>
             `;
 
-            // Open the new tab
             var newWindow = window.open("", "_blank");
             if (newWindow) {
                 newWindow.document.write(sHtmlContent);
                 newWindow.document.close();
 
-                // Listen for messages from the new tab
                 window.addEventListener("message", (event) => {
                     if (event.data.type === "NEW_SUPPLIER") {
                         this._handleNewSupplier(event.data.data);
@@ -1292,7 +1525,6 @@ sap.ui.define([
                 return;
             }
 
-            // Define CSV headers
             var aHeaders = [
                 "Supplier Request ID",
                 "Supplier Name",
@@ -1305,7 +1537,6 @@ sap.ui.define([
                 "Status"
             ];
 
-            // Map items to CSV rows
             var aRows = aItems.map(function (oItem) {
                 return [
                     oItem.supplierRequestId,
@@ -1318,18 +1549,15 @@ sap.ui.define([
                     oItem.stage,
                     oItem.status
                 ].map(function (sValue) {
-                    return '"' + (sValue || "").replace(/"/g, '""') + '"'; // Escape quotes
+                    return '"' + (sValue || "").replace(/"/g, '""') + '"';
                 }).join(",");
             });
 
-            // Combine headers and rows
             var sCSVContent = aHeaders.join(",") + "\n" + aRows.join("\n");
 
-            // Create a Blob with the CSV content
             var oBlob = new Blob([sCSVContent], { type: "text/csv;charset=utf-8;" });
             var sURL = window.URL.createObjectURL(oBlob);
 
-            // Create a temporary link to trigger the download
             var oLink = document.createElement("a");
             oLink.setAttribute("href", sURL);
             oLink.setAttribute("download", "Supplier_Registration_Data.csv");
@@ -1360,8 +1588,6 @@ sap.ui.define([
         }
     });
 });
-
-
 
 
 
