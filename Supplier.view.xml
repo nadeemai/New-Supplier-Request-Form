@@ -444,44 +444,6 @@
                         </l:VerticalLayout>
                     </content>
                 </Panel>
-
-                <!-- New Supplier Request Form Dialog -->
-                <Dialog id="newSupplierDialog" title="New Supplier Request Form" contentWidth="600px" contentHeight="400px" draggable="true" resizable="true">
-                    <content>
-                        <l:VerticalLayout id="newSupplierFormLayout" width="100%" class="sapUiSmallMargin">
-                            <!-- Step Indicator -->
-                            <HBox id="stepIndicator" class="sapUiSmallMargin">
-                                <Text id="step1" text="1" class="stepNumber inactiveStep sapUiTinyMarginEnd" />
-                                <Text id="step2" text="2 Supplier Type" class="stepText inactiveStep sapUiTinyMarginEnd" />
-                                <Text id="step3" text="3" class="stepNumber activeStep sapUiTinyMarginEnd" />
-                                <Text id="step3Text" text="GST & PAN VERIFICATION" class="stepText activeStep sapUiTinyMarginEnd" />
-                            </HBox>
-
-                            <!-- Form Fields -->
-                            <l:Grid id="formGrid" defaultSpan="XL6 L6 M12 S12" class="sapUiSmallMargin">
-                                <Label id="gstinLabel" text="GSTIN No. :" required="true" class="sapUiTinyMarginEnd" />
-                                <Input id="gstinInput" value="{newSupplier>/gstin}" placeholder="Enter GSTIN No." width="100%" />
-                                <Button id="verifyButton" text="Verify" press=".onVerifyPress" type="Emphasized" class="sapUiTinyMarginBegin" />
-
-                                <Label id="panLabel" text="PAN Card No. :" required="true" class="sapUiTinyMarginEnd" />
-                                <Input id="panInput" value="{newSupplier>/pan}" placeholder="Enter PAN Card No." width="100%" />
-
-                                <Label id="dunsLabel" text="DUNS NUMBER" class="sapUiTinyMarginEnd" />
-                                <Input id="dunsInput" value="{newSupplier>/duns}" placeholder="Enter DUNS Number" width="100%" />
-
-                                <Label id="addressLabel" text="Address" class="sapUiTinyMarginEnd" />
-                                <TextArea id="addressInput" value="{newSupplier>/address}" placeholder="Enter Address" rows="3" width="100%" />
-                            </l:Grid>
-                        </l:VerticalLayout>
-                    </content>
-                    <beginButton>
-                        <Button id="previousStepButton" text="Previous Step" press=".onPreviousStepPress" type="Default" />
-                    </beginButton>
-                    <endButton>
-                        <Button id="proceedButton" text="Proceed" press=".onProceedPress" type="Emphasized" />
-                        <Button id="cancelButton" text="Cancel" press=".onCancelPress" type="Reject" />
-                    </endButton> 
-                </Dialog>
             </Page>
         </f:beginColumnPages>
     </f:FlexibleColumnLayout>
