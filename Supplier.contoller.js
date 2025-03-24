@@ -1391,14 +1391,13 @@ sap.ui.define([
                     { supplierRequestId: "R18", supplierName: "XYZ Pvt Ltd", type: "Indirect", requestCreationDate: "12-02-2024", requestAging: "20 Days", lastActionDate: "12-10-2024", lastActionAging: "20 Days", stage: "SUPPLIER", status: "PENDING" },
                     { supplierRequestId: "R17", supplierName: "ABC Pvt Ltd", type: "Direct", requestCreationDate: "12-03-2024", requestAging: "30 Days", lastActionDate: "13-10-2024", lastActionAging: "30 Days", stage: "BUYER", status: "DRAFT" },
                     { supplierRequestId: "R16", supplierName: "XYZ Pvt Ltd", type: "Indirect", requestCreationDate: "12-04-2024", requestAging: "40 Days", lastActionDate: "14-10-2024", lastActionAging: "40 Days", stage: "BUYER", status: "CANCELLED" },
-                    { supplierRequestId: "R16", supplierName: "XYZ Pvt Ltd", type: "Indirect", requestCreationDate: "12-04-2024", requestAging: "40 Days", lastActionDate: "14-10-2024", lastActionAging: "40 Days", stage: "BUYER", status: "CANCELLED" },
                     { supplierRequestId: "R15", supplierName: "ABC Pvt Ltd", type: "Direct", requestCreationDate: "12-05-2024", requestAging: "50 Days", lastActionDate: "15-10-2024", lastActionAging: "50 Days", stage: "ON BOARDING", status: "VENDOR CREATED" },
                     { supplierRequestId: "R14", supplierName: "ABC Pvt Ltd", type: "Direct", requestCreationDate: "12-06-2024", requestAging: "60 Days", lastActionDate: "16-10-2024", lastActionAging: "25 Days", stage: "ON BOARDING", status: "CMDM UPDATE PENDING" },
                     { supplierRequestId: "R13", supplierName: "ABC Pvt Ltd", type: "Indirect", requestCreationDate: "12-07-2024", requestAging: "70 Days", lastActionDate: "17-10-2024", lastActionAging: "35 Days", stage: "ON BOARDING", status: "FINANCE UPDATE PENDING" },
                     { supplierRequestId: "R12", supplierName: "XYZ Pvt Ltd", type: "Indirect", requestCreationDate: "12-08-2024", requestAging: "80 Days", lastActionDate: "18-10-2024", lastActionAging: "55 Days", stage: "ON BOARDING", status: "PURCHASE APPROVAL PENDING" },
-                    { supplierRequestId: "R11", supplierName: "XYZ Pvt Ltd", type: "Indirect", requestCreationDate: "12-109-2024", requestAging: "90 Days", lastActionDate: "19-10-2024", lastActionAging: "45 Days", stage: "BUYER", status: "DRAFT" },
-                    { supplierRequestId: "R13", supplierName: "XYZPvt Ltd", type: "Direct", requestCreationDate: "12-10-2024", requestAging: "100 Days", lastActionDate: "20-10-2024", lastActionAging: "75 Days", stage: "BUYER", status: "APPROVED" },
-                    { supplierRequestId: "R10", supplierName: "XYZPvt Ltd", type: "Direct", requestCreationDate: "12-10-2024", requestAging: "100 Days", lastActionDate: "20-10-2024", lastActionAging: "75 Days", stage: "BUYER", status: "APPROVED" },
+                    { supplierRequestId: "R11", supplierName: "XYZ Pvt Ltd", type: "Indirect", requestCreationDate: "12-09-2024", requestAging: "90 Days", lastActionDate: "19-10-2024", lastActionAging: "45 Days", stage: "BUYER", status: "DRAFT" },
+                    { supplierRequestId: "R13", supplierName: "XYZ Pvt Ltd", type: "Direct", requestCreationDate: "12-10-2024", requestAging: "100 Days", lastActionDate: "20-10-2024", lastActionAging: "75 Days", stage: "BUYER", status: "APPROVED" },
+                    { supplierRequestId: "R10", supplierName: "XYZ Pvt Ltd", type: "Direct", requestCreationDate: "12-10-2024", requestAging: "100 Days", lastActionDate: "20-10-2024", lastActionAging: "75 Days", stage: "BUYER", status: "APPROVED" },
                     { supplierRequestId: "R9", supplierName: "XYZ Pvt Ltd", type: "Direct", requestCreationDate: "12-11-2024", requestAging: "110 Days", lastActionDate: "21-10-2024", lastActionAging: "65 Days", stage: "BUYER", status: "DRAFT" }
                 ],
                 draftCount: 0,
@@ -1424,13 +1423,16 @@ sap.ui.define([
             var oModel = new JSONModel(oData);
             this.getView().setModel(oModel, "products");
 
-            // Initialize the new supplier form model with data from the screenshot
+            // Initialize the new supplier form model
             var oNewSupplierData = {
-                gstin: "27AICR9957Q1ZC",
-                pan: "AAICR9957Q",
+                spendType: "",
+                supplierType: "",
+                gstin: "",
+                pan: "",
                 duns: "",
-                address: "Business Park, Vidyavihar West, Kiroli Village, Mumbai, 400086",
-                isVerified: false // Add a flag to track verification status
+                address: "",
+                isVerified: false,
+                currentStep: 1
             };
             var oNewSupplierModel = new JSONModel(oNewSupplierData);
             this.getView().setModel(oNewSupplierModel, "newSupplier");
@@ -1542,6 +1544,120 @@ sap.ui.define([
                     background-color: transparent;
                     color: #000;
                     font-weight: bold;
+                }
+                .form-container {
+                    padding: 20px;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    border: 1px solid #d9d9d9;
+                    border-radius: 8px;
+                    background-color: #fff;
+                }
+                .header {
+                    background-color: #ff0000;
+                    color: #fff;
+                    padding: 10px;
+                    text-align: center;
+                    border-top-left-radius: 8px;
+                    border-top-right-radius: 8px;
+                }
+                .step-indicator {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+                .form-field {
+                    margin-bottom: 15px;
+                }
+                .form-field label {
+                    display: block;
+                    font-weight: bold;
+                    margin-bottom: 5px;
+                }
+                .form-field input, .form-field textarea, .form-field select {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #d9d9d9;
+                    border-radius: 4px;
+                }
+                .form-field button {
+                    padding: 8px 16px;
+                    margin-left: 10px;
+                    background-color: #0070f0;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                .form-field button:disabled {
+                    background-color: #d3d3d3;
+                    cursor: not-allowed;
+                }
+                .form-field .verified {
+                    background-color: #28a745;
+                }
+                .buttons {
+                    display: flex;
+                    justify-content: flex-end;
+                    gap: 10px;
+                    margin-top: 20px;
+                }
+                .buttons button {
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+                .buttons .proceed {
+                    background-color: #0070f0;
+                    color: #fff;
+                    border: none;
+                }
+                .buttons .cancel {
+                    background-color: #fff;
+                    color: #ff0000;
+                    border: 1px solid #ff0000;
+                }
+                .buttons .previous {
+                    background-color: #fff;
+                    color: #000;
+                    border: 1px solid #d9d9d9;
+                }
+                .error {
+                    border-color: #ff0000 !important;
+                }
+                .error-message {
+                    color: #ff0000;
+                    font-size: 12px;
+                    margin-top: 5px;
+                }
+                .duplicate-warning {
+                    color: #ff0000;
+                    margin-bottom: 15px;
+                    display: flex;
+                    align-items: center;
+                }
+                .duplicate-warning::before {
+                    content: "⚠️";
+                    margin-right: 5px;
+                }
+                .duplicate-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 15px;
+                }
+                .duplicate-table th, .duplicate-table td {
+                    border: 1px solid #d9d9d9;
+                    padding: 8px;
+                    text-align: left;
+                }
+                .duplicate-table th {
+                    background-color: #f7f7f7;
+                }
+                .duplicate-table input[type="radio"] {
+                    margin-right: 5px;
+                }
+                .reason-field {
+                    margin-top: 10px;
                 }
             `;
             var oStyle = document.createElement("style");
@@ -1997,108 +2113,516 @@ sap.ui.define([
         },
 
         onOrderPress: function () {
-            // Open the new supplier form dialog
-            var oDialog = this.byId("newSupplierDialog");
-            oDialog.open();
+            // Open the new supplier form in a new tab
+            var oNewSupplierModel = this.getView().getModel("newSupplier");
+            oNewSupplierModel.setProperty("/currentStep", 1);
+            oNewSupplierModel.setProperty("/spendType", "");
+            oNewSupplierModel.setProperty("/supplierType", "");
+            oNewSupplierModel.setProperty("/gstin", "");
+            oNewSupplierModel.setProperty("/pan", "");
+            oNewSupplierModel.setProperty("/duns", "");
+            oNewSupplierModel.setProperty("/address", "");
+            oNewSupplierModel.setProperty("/isVerified", false);
 
-            // Set the "Verify" button state after the dialog is opened
-            var oVerifyButton = this.byId("verifyButton");
-            if (oVerifyButton) {
-                var oNewSupplierModel = this.getView().getModel("newSupplier");
-                var oNewSupplierData = oNewSupplierModel.getData();
+            // Generate the HTML content for the new tab
+            var sHtmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Supplier Request Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        .form-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .header {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .step-number {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .step-text {
+            font-size: 12px;
+            line-height: 20px;
+            margin-right: 10px;
+        }
+        .inactive-step {
+            background-color: #d3d3d3;
+            color: #666;
+        }
+        .active-step {
+            background-color: #ff0000;
+            color: #fff;
+        }
+        .active-step.step-text {
+            background-color: transparent;
+            color: #000;
+            font-weight: bold;
+        }
+        .form-field {
+            margin-bottom: 15px;
+        }
+        .form-field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-field input, .form-field textarea, .form-field select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-field button {
+            padding: 8px 16px;
+            margin-left: 10px;
+            background-color: #0070f0;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-field button:disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+        .form-field .verified {
+            background-color: #28a745;
+        }
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .buttons button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .buttons .proceed {
+            background-color: #0070f0;
+            color: #fff;
+            border: none;
+        }
+        .buttons .cancel {
+            background-color: #fff;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+        .buttons .previous {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #d9d9d9;
+        }
+        .error {
+            border-color: #ff0000 !important;
+        }
+        .error-message {
+            color: #ff0000;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .duplicate-warning {
+            color: #ff0000;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .duplicate-warning::before {
+            content: "⚠️";
+            margin-right: 5px;
+        }
+        .duplicate-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .duplicate-table th, .duplicate-table td {
+            border: 1px solid #d9d9d9;
+            padding: 8px;
+            text-align: left;
+        }
+        .duplicate-table th {
+            background-color: #f7f7f7;
+        }
+        .duplicate-table input[type="radio"] {
+            margin-right: 5px;
+        }
+        .reason-field {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="header">NEW SUPPLIER REQUEST FORM</div>
+        <div id="stepIndicator" class="step-indicator">
+            <div id="step1Number" class="step-number active-step">1</div>
+            <div id="step1Text" class="step-text active-step">SUPPLIER SPEND TYPE</div>
+            <div id="step2Number" class="step-number inactive-step">2</div>
+            <div id="step2Text" class="step-text inactive-step">SUPPLIER TYPE</div>
+            <div id="step3Number" class="step-number inactive-step">3</div>
+            <div id="step3Text" class="step-text inactive-step">GST & PAN VERIFICATION</div>
+        </div>
+        <div id="formContent">
+            <!-- Step 1: Supplier Spend Type -->
+            <div id="step1" class="step-content">
+                <div class="form-field">
+                    <label for="spendType">SUPPLIER SPEND TYPE: <span style="color: #ff0000;">*</span></label>
+                    <select id="spendType">
+                        <option value="">Select Spend Type</option>
+                        <option value="Direct">Direct</option>
+                        <option value="Indirect">Indirect</option>
+                        <option value="Capital">Capital</option>
+                        <option value="Value Fit">Value Fit</option>
+                        <option value="Proto">Proto</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                    <div id="spendTypeError" class="error-message" style="display: none;">Please select a spend type.</div>
+                </div>
+            </div>
+            <!-- Step 2: Supplier Type -->
+            <div id="step2" class="step-content" style="display: none;">
+                <div class="form-field">
+                    <label for="supplierType">SUPPLIER TYPE: <span style="color: #ff0000;">*</span></label>
+                    <select id="supplierType">
+                        <option value="">Select Supplier Type</option>
+                        <option value="LOCAL GST">LOCAL GST</option>
+                        <option value="LOCAL NON-GST">LOCAL NON-GST</option>
+                        <option value="IMPORT">IMPORT</option>
+                    </select>
+                    <div id="supplierTypeError" class="error-message" style="display: none;">Please select a supplier type.</div>
+                </div>
+            </div>
+            <!-- Step 3: GST & PAN Verification -->
+            <div id="step3" class="step-content" style="display: none;">
+                <div id="duplicateWarning" class="duplicate-warning" style="display: none;">
+                    Duplicate Found: Vendor already exists with same GSTIN/PAN
+                </div>
+                <table id="duplicateTable" class="duplicate-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Vendor Code</th>
+                            <th>Spend Type</th>
+                            <th>Postal Code</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="radio" name="duplicateVendor" value="V0001"></td>
+                            <td>V0001</td>
+                            <td>Direct</td>
+                            <td>122001</td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="duplicateVendor" value="V0002"></td>
+                            <td>V0002</td>
+                            <td>Direct</td>
+                            <td>122001</td>
+                        </tr>
+                        <tr>
+                            <td><input type="radio" name="duplicateVendor" value="V0003"></td>
+                            <td>V0003</td>
+                            <td>Direct</td>
+                            <td>122001</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="reasonField" class="reason-field" style="display: none;">
+                    <div class="form-field">
+                        <label for="duplicateReason">PROVIDE REASON for creating Duplicate Vendor Code:</label>
+                        <input type="text" id="duplicateReason" placeholder="Enter reason">
+                        <div id="duplicateReasonError" class="error-message" style="display: none;">Please provide a reason for creating a duplicate vendor.</div>
+                    </div>
+                    <div class="form-field">
+                        <label>DIFFERENT ADDRESS</label>
+                        <input type="radio" name="differentAddress" value="Yes" onclick="updateProceedButton()"> Yes
+                        <input type="radio" name="differentAddress" value="No" onclick="updateProceedButton()"> No
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label for="gstin">GSTIN No.: <span style="color: #ff0000;">*</span></label>
+                    <input type="text" id="gstin" placeholder="Enter GSTIN No.">
+                    <button id="verifyButton" onclick="verifyGSTINAndPAN()">Verify</button>
+                    <div id="gstinError" class="error-message" style="display: none;"></div>
+                </div>
+                <div class="form-field">
+                    <label for="pan">PAN Card No.: <span style="color: #ff0000;">*</span></label>
+                    <input type="text" id="pan" placeholder="Enter PAN Card No.">
+                    <div id="panError" class="error-message" style="display: none;"></div>
+                </div>
+                <div class="form-field">
+                    <label for="duns">DUNS NUMBER</label>
+                    <input type="text" id="duns" placeholder="Enter DUNS Number">
+                </div>
+                <div class="form-field">
+                    <label for="address">Address</label>
+                    <textarea id="address" placeholder="Enter Address" rows="3"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="buttons">
+            <button id="previousButton" class="previous" onclick="previousStep()" style="display: none;">Previous Step</button>
+            <button id="nextButton" class="proceed" onclick="nextStep()">Next Step</button>
+            <button id="proceedButton" class="proceed" onclick="proceed()" style="display: none;">Proceed</button>
+            <button class="cancel" onclick="cancel()">Cancel</button>
+        </div>
+    </div>
 
-                // Check if the GSTIN and PAN match the mock verification logic
-                if (oNewSupplierData.gstin === "27AICR9957Q1ZC" && oNewSupplierData.pan === "AAICR9957Q") {
-                    oVerifyButton.setText("Verified");
-                    oVerifyButton.setType("Success");
-                    oVerifyButton.setEnabled(false);
-                    oNewSupplierModel.setProperty("/isVerified", true);
-                } else {
-                    oVerifyButton.setText("Verify");
-                    oVerifyButton.setType("Emphasized");
-                    oVerifyButton.setEnabled(true);
-                    oNewSupplierModel.setProperty("/isVerified", false);
+    <script>
+        let currentStep = 1;
+        let isVerified = false;
+        let formData = {
+            spendType: "",
+            supplierType: "",
+            gstin: "",
+            pan: "",
+            duns: "",
+            address: "",
+            isVerified: false,
+            duplicateVendor: "",
+            duplicateReason: "",
+            differentAddress: ""
+        };
+
+        function updateStepIndicator() {
+            document.getElementById("step1Number").className = "step-number " + (currentStep === 1 ? "active-step" : "inactive-step");
+            document.getElementById("step1Text").className = "step-text " + (currentStep === 1 ? "active-step" : "inactive-step");
+            document.getElementById("step2Number").className = "step-number " + (currentStep === 2 ? "active-step" : "inactive-step");
+            document.getElementById("step2Text").className = "step-text " + (currentStep === 2 ? "active-step" : "inactive-step");
+            document.getElementById("step3Number").className = "step-number " + (currentStep === 3 ? "active-step" : "inactive-step");
+            document.getElementById("step3Text").className = "step-text " + (currentStep === 3 ? "active-step" : "inactive-step");
+
+            document.getElementById("step1").style.display = currentStep === 1 ? "block" : "none";
+            document.getElementById("step2").style.display = currentStep === 2 ? "block" : "none";
+            document.getElementById("step3").style.display = currentStep === 3 ? "block" : "none";
+
+            document.getElementById("previousButton").style.display = currentStep === 1 ? "none" : "inline-block";
+            document.getElementById("nextButton").style.display = currentStep < 3 ? "inline-block" : "none";
+            document.getElementById("proceedButton").style.display = currentStep === 3 ? "inline-block" : "none";
+        }
+
+        function nextStep() {
+            if (currentStep === 1) {
+                formData.spendType = document.getElementById("spendType").value;
+                if (!formData.spendType) {
+                    document.getElementById("spendType").classList.add("error");
+                    document.getElementById("spendTypeError").style.display = "block";
+                    return;
+                }
+                document.getElementById("spendType").classList.remove("error");
+                document.getElementById("spendTypeError").style.display = "none";
+                currentStep++;
+            } else if (currentStep === 2) {
+                formData.supplierType = document.getElementById("supplierType").value;
+                if (!formData.supplierType) {
+                    document.getElementById("supplierType").classList.add("error");
+                    document.getElementById("supplierTypeError").style.display = "block";
+                    return;
+                }
+                document.getElementById("supplierType").classList.remove("error");
+                document.getElementById("supplierTypeError").style.display = "none";
+                currentStep++;
+                checkForDuplicates();
+            }
+            updateStepIndicator();
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                document.getElementById("duplicateWarning").style.display = "none";
+                document.getElementById("duplicateTable").style.display = "none";
+                document.getElementById("reasonField").style.display = "none";
+                updateStepIndicator();
+            }
+        }
+
+        function verifyGSTINAndPAN() {
+            formData.gstin = document.getElementById("gstin").value.trim();
+            formData.pan = document.getElementById("pan").value.trim();
+
+            // Validate GSTIN format
+            const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            if (!formData.gstin) {
+                document.getElementById("gstin").classList.add("error");
+                document.getElementById("gstinError").textContent = "GSTIN No. is required.";
+                document.getElementById("gstinError").style.display = "block";
+                return;
+            } else if (!gstinRegex.test(formData.gstin)) {
+                document.getElementById("gstin").classList.add("error");
+                document.getElementById("gstinError").textContent = "Invalid GSTIN format. It should be 15 characters (e.g., 27AICR9957Q1ZC).";
+                document.getElementById("gstinError").style.display = "block";
+                return;
+            } else {
+                document.getElementById("gstin").classList.remove("error");
+                document.getElementById("gstinError").style.display = "none";
+            }
+
+            // Validate PAN format
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            if (!formData.pan) {
+                document.getElementById("pan").classList.add("error");
+                document.getElementById("panError").textContent = "PAN Card No. is required.";
+                document.getElementById("panError").style.display = "block";
+                return;
+            } else if (!panRegex.test(formData.pan)) {
+                document.getElementById("pan").classList.add("error");
+                document.getElementById("panError").textContent = "Invalid PAN format. It should be 10 characters (e.g., AAICR9957Q).";
+                document.getElementById("panError").style.display = "block";
+                return;
+            } else {
+                document.getElementById("pan").classList.remove("error");
+                document.getElementById("panError").style.display = "none";
+            }
+
+            // Mock verification logic
+            if (formData.gstin === "27AICR9957Q1ZC" && formData.pan === "AAICR9957Q") {
+                document.getElementById("verifyButton").textContent = "Verified";
+                document.getElementById("verifyButton").classList.add("verified");
+                document.getElementById("verifyButton").disabled = true;
+                isVerified = true;
+                formData.isVerified = true;
+                checkForDuplicates();
+                alert("GSTIN and PAN verified successfully!");
+            } else {
+                document.getElementById("verifyButton").textContent = "Verify";
+                document.getElementById("verifyButton").classList.remove("verified");
+                document.getElementById("verifyButton").disabled = false;
+                isVerified = false;
+                formData.isVerified = false;
+                alert("Verification failed. Please check the GSTIN and PAN Card No.");
+            }
+        }
+
+        function checkForDuplicates() {
+            if (formData.gstin === "27AICR9957Q1ZC" && formData.pan === "AAICR9957Q") {
+                document.getElementById("duplicateWarning").style.display = "block";
+                document.getElementById("duplicateTable").style.display = "table";
+                document.getElementById("reasonField").style.display = "block";
+            } else {
+                document.getElementById("duplicateWarning").style.display = "none";
+                document.getElementById("duplicateTable").style.display = "none";
+                document.getElementById("reasonField").style.display = "none";
+            }
+        }
+
+        function updateProceedButton() {
+            formData.differentAddress = document.querySelector('input[name="differentAddress"]:checked')?.value || "";
+        }
+
+        function proceed() {
+            formData.gstin = document.getElementById("gstin").value.trim();
+            formData.pan = document.getElementById("pan").value.trim();
+            formData.duns = document.getElementById("duns").value.trim();
+            formData.address = document.getElementById("address").value.trim();
+            formData.duplicateVendor = document.querySelector('input[name="duplicateVendor"]:checked')?.value || "";
+            formData.duplicateReason = document.getElementById("duplicateReason")?.value.trim() || "";
+            formData.differentAddress = document.querySelector('input[name="differentAddress"]:checked')?.value || "";
+
+            if (!formData.gstin || !formData.pan) {
+                alert("Please fill in all required fields (GSTIN and PAN Card No.) before proceeding.");
+                return;
+            }
+
+            if (!formData.isVerified) {
+                alert("Please verify the GSTIN and PAN Card No. before proceeding.");
+                return;
+            }
+
+            if (formData.gstin === "27AICR9957Q1ZC" && formData.pan === "AAICR9957Q") {
+                if (!formData.duplicateVendor) {
+                    alert("Please select a duplicate vendor.");
+                    return;
+                }
+                if (!formData.duplicateReason) {
+                    document.getElementById("duplicateReason").classList.add("error");
+                    document.getElementById("duplicateReasonError").style.display = "block";
+                    return;
+                }
+                document.getElementById("duplicateReason").classList.remove("error");
+                document.getElementById("duplicateReasonError").style.display = "none";
+
+                if (!formData.differentAddress) {
+                    alert("Please specify if the address is different.");
+                    return;
                 }
             }
-        },
 
-        onVerifyPress: function () {
-            var oGstinInput = this.byId("gstinInput");
-            var oPanInput = this.byId("panInput");
-            var sGstin = oGstinInput.getValue().trim();
-            var sPan = oPanInput.getValue().trim();
-            var oVerifyButton = this.byId("verifyButton");
-            var oNewSupplierModel = this.getView().getModel("newSupplier");
-
-            // Validate GSTIN format (15 characters, specific pattern)
-            var gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-            if (!sGstin) {
-                oGstinInput.setValueState("Error");
-                oGstinInput.setValueStateText("GSTIN No. is required.");
-                MessageToast.show("Please enter a GSTIN No.");
-                return;
-            } else if (!gstinRegex.test(sGstin)) {
-                oGstinInput.setValueState("Error");
-                oGstinInput.setValueStateText("Invalid GSTIN format. It should be 15 characters (e.g., 27AICR9957Q1ZC).");
-                MessageToast.show("Please enter a valid GSTIN No.");
-                return;
-            } else {
-                oGstinInput.setValueState("None");
+            // Send data back to the parent window
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({
+                    type: "NEW_SUPPLIER",
+                    data: formData
+                }, "*");
             }
 
-            // Validate PAN format (10 characters, specific pattern)
-            var panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-            if (!sPan) {
-                oPanInput.setValueState("Error");
-                oPanInput.setValueStateText("PAN Card No. is required.");
-                MessageToast.show("Please enter a PAN Card No.");
-                return;
-            } else if (!panRegex.test(sPan)) {
-                oPanInput.setValueState("Error");
-                oPanInput.setValueStateText("Invalid PAN format. It should be 10 characters (e.g., AAICR9957Q).");
-                MessageToast.show("Please enter a valid PAN Card No.");
-                return;
-            } else {
-                oPanInput.setValueState("None");
-            }
+            alert("New Supplier Request created successfully!");
+            window.close();
+        }
 
-            // Mock verification logic (replace with actual API call if needed)
-            if (sGstin === "27AICR9957Q1ZC" && sPan === "AAICR9957Q") {
-                MessageToast.show("GSTIN and PAN verified successfully!");
-                oVerifyButton.setText("Verified");
-                oVerifyButton.setType("Success");
-                oVerifyButton.setEnabled(false);
-                oNewSupplierModel.setProperty("/isVerified", true);
+        function cancel() {
+            if (confirm("Are you sure you want to cancel? All unsaved changes will be lost.")) {
+                window.close();
+            }
+        }
+
+        // Initialize the form
+        updateStepIndicator();
+    </script>
+</body>
+</html>
+            `;
+
+            // Open the new tab
+            var newWindow = window.open("", "_blank");
+            if (newWindow) {
+                newWindow.document.write(sHtmlContent);
+                newWindow.document.close();
+
+                // Listen for messages from the new tab
+                window.addEventListener("message", (event) => {
+                    if (event.data.type === "NEW_SUPPLIER") {
+                        this._handleNewSupplier(event.data.data);
+                    }
+                });
             } else {
-                MessageToast.show("Verification failed. Please check the GSTIN and PAN Card No.");
-                oVerifyButton.setText("Verify");
-                oVerifyButton.setType("Emphasized");
-                oVerifyButton.setEnabled(true);
-                oNewSupplierModel.setProperty("/isVerified", false);
+                MessageToast.show("Failed to open new tab. Please allow pop-ups for this site.");
             }
         },
 
-        onPreviousStepPress: function () {
-            MessageToast.show("Previous Step functionality not implemented yet.");
-            // Add logic to navigate to the previous step if needed
-        },
-
-        onProceedPress: function () {
-            var oNewSupplierModel = this.getView().getModel("newSupplier");
-            var oNewSupplierData = oNewSupplierModel.getData();
-
-            // Check if GSTIN and PAN are filled and verified
-            if (!oNewSupplierData.gstin || !oNewSupplierData.pan) {
-                MessageToast.show("Please fill in all required fields (GSTIN and PAN Card No.) before proceeding.");
-                return;
-            }
-
-            if (!oNewSupplierData.isVerified) {
-                MessageToast.show("Please verify the GSTIN and PAN Card No. before proceeding.");
-                return;
-            }
-
-            // Mock proceed logic (replace with actual logic to save data)
+        _handleNewSupplier: function (formData) {
             var oModel = this.getView().getModel("products");
             var oData = oModel.getData();
             var aItems = oData.items;
@@ -2112,7 +2636,7 @@ sap.ui.define([
             var oNewSupplier = {
                 supplierRequestId: sNewId,
                 supplierName: "New Supplier " + sNewId,
-                type: "Direct",
+                type: formData.spendType,
                 requestCreationDate: sCurrentDate,
                 requestAging: "0 Days",
                 lastActionDate: sCurrentDate,
@@ -2131,41 +2655,6 @@ sap.ui.define([
             oTable.getBinding("items").refresh();
 
             MessageToast.show("New Supplier Request created successfully! ID: " + sNewId);
-
-            // Reset the form and close the dialog
-            oNewSupplierModel.setData({
-                gstin: "",
-                pan: "",
-                duns: "",
-                address: "",
-                isVerified: false
-            });
-            this.byId("verifyButton").setText("Verify");
-            this.byId("verifyButton").setType("Emphasized");
-            this.byId("verifyButton").setEnabled(true);
-
-            var oDialog = this.byId("newSupplierDialog");
-            oDialog.close();
-        },
-
-        onCancelPress: function () {
-            // Reset the form and close the dialog
-            var oNewSupplierModel = this.getView().getModel("newSupplier");
-            oNewSupplierModel.setData({
-                gstin: "",
-                pan: "",
-                duns: "",
-                address: "",
-                isVerified: false
-            });
-            this.byId("verifyButton").setText("Verify");
-            this.byId("verifyButton").setType("Emphasized");
-            this.byId("verifyButton").setEnabled(true);
-
-            var oDialog = this.byId("newSupplierDialog");
-            oDialog.close();
-
-            MessageToast.show("Form cancelled.");
         },
 
         onDownloadPress: function () {
@@ -2245,3 +2734,4 @@ sap.ui.define([
         }
     });
 });
+
