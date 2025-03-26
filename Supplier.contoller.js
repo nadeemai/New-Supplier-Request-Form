@@ -147,6 +147,10 @@ sap.ui.define([
                 .radio-group { display: inline-flex; align-items: center; gap: 10px; }
                 .radio-group input[type="radio"] { margin: 0 5px 0 0; }
                 .radio-group label { font-weight: normal; margin: 0; }
+                .panel { border: 1px solid #d9d9d9; border-radius: 4px; margin-bottom: 20px; }
+                .panel-header { background-color: #f7f7f7; padding: 10px; border-bottom: 1px solid #d9d9d9; font-weight: bold; cursor: pointer; }
+                .panel-content { padding: 15px; display: none; }
+                .panel-content.active { display: block; }
             `;
             var oStyle = document.createElement("style");
             oStyle.type = "text/css";
@@ -241,167 +245,278 @@ sap.ui.define([
         .buttons button { padding: 8px 16px; border-radius: 4px; cursor: pointer; }
         .buttons .submit { background-color: #28a745; color: #fff; border: none; }
         .buttons .cancel { background-color: #fff; color: #ff0000; border: 1px solid #ff0000; }
+        .input-with-button { display: flex; align-items: center; gap: 10px; }
+        .input-with-button input { width: 70%; }
+        .input-with-button button { padding: 8px 16px; background-color: #0070f0; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .input-with-button button:disabled { background-color: #d3d3d3; cursor: not-allowed; }
+        .input-with-button .verified { background-color: #28a745; }
+        .panel { border: 1px solid #d9d9d9; border-radius: 4px; margin-bottom: 20px; }
+        .panel-header { background-color: #f7f7f7; padding: 10px; border-bottom: 1px solid #d9d9d9; font-weight: bold; cursor: pointer; }
+        .panel-content { padding: 15px; display: none; }
+        .panel-content.active { display: block; }
     </style>
 </head>
 <body>
     <div class="detailed-form-container">
-        <div class="header">SUPPLIER REQUEST FORM 0.0</div>
-        <div class="form-section">
-            <div class="section-header">SUPPLIER SURVEY</div>
-            <div class="field-container">
-                <label>Survey ID:</label>
-                <input type="text" id="surveyId" placeholder="Enter Survey ID" style="width: 50%;">
-            </div>
-            <div class="field-container">
-                <label>Local/Global:</label>
-                <select id="localGlobal" style="width: 50%;">
-                    <option value="">Select</option>
-                    <option value="Local">Local</option>
-                    <option value="Global">Global</option>
-                </select>
-            </div>
-            <div class="field-container">
-                <label>Local/Global Supplier:</label>
-                <select id="localGlobalSupplier" style="width: 50%;">
-                    <option value="">Select</option>
-                    <option value="Local">Local</option>
-                    <option value="Global">Global</option>
-                </select>
-            </div>
-            <div class="field-container">
-                <label>Requestor Vendor Code:</label>
-                <input type="text" id="requestorVendorCode" placeholder="Enter Requestor Code" style="width: 50%;">
-            </div>
-            <div class="field-container">
-                <label>Is MSTD a party?:</label>
-                <div class="radio-group">
-                    <input type="radio" name="mstdParty" value="Yes" id="mstdPartyYes">
-                    <label for="mstdPartyYes">Yes</label>
-                    <input type="radio" name="mstdParty" value="No" id="mstdPartyNo">
-                    <label for="mstdPartyNo">No</label>
+        <div class="header">SUPPLIER REQUEST FORM</div>
+        
+        <div class="panel">
+            <div class="panel-header" onclick="togglePanel(this)">SUPPLIER SURVEY</div>
+            <div class="panel-content active">
+                <div class="field-container">
+                    <label>Survey ID:</label>
+                    <input type="text" id="surveyId" placeholder="Enter Survey ID" style="width: 50%;">
+                </div>
+                <div class="field-container">
+                    <label>Local/Global:</label>
+                    <select id="localGlobal" style="width: 50%;">
+                        <option value="">Select</option>
+                        <option value="Local">Local</option>
+                        <option value="Global">Global</option>
+                    </select>
+                </div>
+                <div class="field-container">
+                    <label>Local/Global Supplier:</label>
+                    <select id="localGlobalSupplier" style="width: 50%;">
+                        <option value="">Select</option>
+                        <option value="Local">Local</option>
+                        <option value="Global">Global</option>
+                    </select>
+                </div>
+                <div class="field-container">
+                    <label>Requestor Vendor Code:</label>
+                    <input type="text" id="requestorVendorCode" placeholder="Enter Requestor Code" style="width: 50%;">
+                </div>
+                <div class="field-container">
+                    <label>Is MSTD a party?:</label>
+                    <div class="radio-group">
+                        <input type="radio" name="mstdParty" value="Yes" id="mstdPartyYes">
+                        <label for="mstdPartyYes">Yes</label>
+                        <input type="radio" name="mstdParty" value="No" id="mstdPartyNo">
+                        <label for="mstdPartyNo">No</label>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="form-section">
-            <div class="section-header">REQUIREMENT</div>
-            <div class="field-container">
-                <label>Address:</label>
-                <textarea id="address" placeholder="Enter Address" rows="3"></textarea>
-            </div>
-            <div class="field-container">
-                <label>Comments:</label>
-                <textarea id="comments" placeholder="Enter Comments" rows="3"></textarea>
-            </div>
-        </div>
-        <div class="form-section">
-            <div class="section-header">ACKNOWLEDGEMENT</div>
-            <div class="field-container">
-                <label>Supplier Full Name:</label>
-                <input type="text" id="supplierFullName" placeholder="Enter Supplier Full Name" style="width: 50%;">
-            </div>
-            <div class="field-container">
-                <label>Address:</label>
-                <input type="text" id="ackAddress" placeholder="Enter Address" style="width: 50%;">
-            </div>
-            <div class="field-container">
-                <label>Phone No.:</label>
-                <input type="text" id="ackPhone" placeholder="Enter Phone Number" style="width: 50%;">
-            </div>
-        </div>
-        <div class="form-section">
-            <div class="section-header">PRIMARY SUPPLIER CONTACT</div>
-            <div class="field-container">
-                <label>Contact Name:</label>
-                <input type="text" id="contactName" placeholder="Enter Contact Name" style="width: 50%;">
-            </div>
-            <div class="field-container">
-                <label>Phone No.:</label>
-                <input type="text" id="contactPhone" placeholder="Enter Phone Number" style="width: 50%;">
-            </div>
-            <div class="field-container">
-                <label>Email:</label>
-                <input type="email" id="contactEmail" placeholder="Enter Email" style="width: 50%;">
-            </div>
-        </div>
-        <div class="form-section">
-            <div class="section-header">GENERAL SUPPLIER INFORMATION</div>
-            <div class="field-container">
-                <label>Interested in Bidding?:</label>
-                <div class="radio-group">
-                    <input type="radio" name="interestedBidding" value="Yes" id="interestedBiddingYes">
-                    <label for="interestedBiddingYes">Yes</label>
-                    <input type="radio" name="interestedBidding" value="No" id="interestedBiddingNo">
-                    <label for="interestedBiddingNo">No</label>
+
+        <div class="panel">
+            <div class="panel-header" onclick="togglePanel(this)">REQUIREMENT</div>
+            <div class="panel-content">
+                <div class="field-container">
+                    <label>Address:</label>
+                    <textarea id="address" placeholder="Enter Address" rows="3"></textarea>
                 </div>
-            </div>
-            <div class="field-container">
-                <label>Interested in E-Bidding?:</label>
-                <div class="radio-group">
-                    <input type="radio" name="interestedEBidding" value="Yes" id="interestedEBiddingYes">
-                    <label for="interestedEBiddingYes">Yes</label>
-                    <input type="radio" name="interestedEBidding" value="No" id="interestedEBiddingNo">
-                    <label for="interestedEBiddingNo">No</label>
-                </div>
-            </div>
-            <div class="field-container">
-                <label>Supports E-Invoicing?:</label>
-                <div class="radio-group">
-                    <input type="radio" name="supportsEInvoicing" value="Yes" id="supportsEInvoicingYes">
-                    <label for="supportsEInvoicingYes">Yes</label>
-                    <input type="radio" name="supportsEInvoicing" value="No" id="supportsEInvoicingNo">
-                    <label for="supportsEInvoicingNo">No</label>
-                </div>
-            </div>
-            <div class="field-container">
-                <label>Supports E-Ordering?:</label>
-                <div class="radio-group">
-                    <input type="radio" name="supportsEOrdering" value="Yes" id="supportsEOrderingYes">
-                    <label for="supportsEOrderingYes">Yes</label>
-                    <input type="radio" name="supportsEOrdering" value="No" id="supportsEOrderingNo">
-                    <label for="supportsEOrderingNo">No</label>
+                <div class="field-container">
+                    <label>Comments:</label>
+                    <textarea id="comments" placeholder="Enter Comments" rows="3"></textarea>
                 </div>
             </div>
         </div>
-        <div class="form-section">
-            <div class="section-header">PURCHASING ORGANIZATION INFORMATION</div>
-            <div class="field-container">
-                <label>Additional Purchasing Org:</label>
-                <select id="additionalPurchOrg" style="width: 50%;">
-                    <option value="">Select</option>
-                    <option value="Org1">Org1</option>
-                    <option value="Org2">Org2</option>
-                </select>
-            </div>
-            <div class="field-container">
-                <label>Purchasing Group:</label>
-                <select id="purchasingGroup" style="width: 50%;">
-                    <option value="">Select</option>
-                    <option value="Group1">Group1</option>
-                    <option value="Group2">Group2</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-section">
-            <div class="section-header">PAYEE/TERMS</div>
-            <div class="field-container">
-                <label>Payment Terms:</label>
-                <select id="paymentTerms" style="width: 50%;">
-                    <option value="">Select</option>
-                    <option value="Net 30">Net 30</option>
-                    <option value="Net 60">Net 60</option>
-                </select>
+
+        <div class="panel">
+            <div class="panel-header" onclick="togglePanel(this)">ACKNOWLEDGEMENT</div>
+            <div class="panel-content">
+                <div class="field-container">
+                    <label>Supplier Full Name:</label>
+                    <input type="text" id="supplierFullName" placeholder="Enter Supplier Full Name" style="width: 50%;">
+                </div>
+                <div class="field-container">
+                    <label>Address:</label>
+                    <input type="text" id="ackAddress" placeholder="Enter Address" style="width: 50%;">
+                </div>
+                <div class="field-container">
+                    <label>Phone No.:</label>
+                    <input type="text" id="ackPhone" placeholder="Enter Phone Number" style="width: 50%;">
+                </div>
             </div>
         </div>
+
+        <div class="panel">
+            <div class="panel-header" onclick="togglePanel(this)">PRIMARY SUPPLIER CONTACT</div>
+            <div class="panel-content">
+                <div class="field-container">
+                    <label>Contact Name:</label>
+                    <input type="text" id="contactName" placeholder="Enter Contact Name" style="width: 50%;">
+                </div>
+                <div class="field-container">
+                    <label>Phone No.:</label>
+                    <input type="text" id="contactPhone" placeholder="Enter Phone Number" style="width: 50%;">
+                </div>
+                <div class="field-container">
+                    <label>Email:</label>
+                    <input type="email" id="contactEmail" placeholder="Enter Email" style="width: 50%;">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header" onclick="togglePanel(this)">GENERAL SUPPLIER INFORMATION</div>
+            <div class="panel-content">
+                <div class="field-container">
+                    <label>GSTIN No.:</label>
+                    <div class="input-with-button">
+                        <input type="text" id="gstin" placeholder="Enter GSTIN No." value="${sGstin}">
+                        <button id="gstinVerifyButton" onclick="verifyGSTIN()">Verify</button>
+                    </div>
+                </div>
+                <div class="field-container">
+                    <label>PAN Card No.:</label>
+                    <div class="input-with-button">
+                        <input type="text" id="pan" placeholder="Enter PAN Card No." value="${sPan}">
+                        <button id="panVerifyButton" onclick="verifyPAN()">Verify</button>
+                    </div>
+                </div>
+                <div class="field-container">
+                    <label>Interested in Bidding?:</label>
+                    <div class="radio-group">
+                        <input type="radio" name="interestedBidding" value="Yes" id="interestedBiddingYes">
+                        <label for="interestedBiddingYes">Yes</label>
+                        <input type="radio" name="interestedBidding" value="No" id="interestedBiddingNo">
+                        <label for="interestedBiddingNo">No</label>
+                    </div>
+                </div>
+                <div class="field-container">
+                    <label>Interested in E-Bidding?:</label>
+                    <div class="radio-group">
+                        <input type="radio" name="interestedEBidding" value="Yes" id="interestedEBiddingYes">
+                        <label for="interestedEBiddingYes">Yes</label>
+                        <input type="radio" name="interestedEBidding" value="No" id="interestedEBiddingNo">
+                        <label for="interestedEBiddingNo">No</label>
+                    </div>
+                </div>
+                <div class="field-container">
+                    <label>Supports E-Invoicing?:</label>
+                    <div class="radio-group">
+                        <input type="radio" name="supportsEInvoicing" value="Yes" id="supportsEInvoicingYes">
+                        <label for="supportsEInvoicingYes">Yes</label>
+                        <input type="radio" name="supportsEInvoicing" value="No" id="supportsEInvoicingNo">
+                        <label for="supportsEInvoicingNo">No</label>
+                    </div>
+                </div>
+                <div class="field-container">
+                    <label>Supports E-Ordering?:</label>
+                    <div class="radio-group">
+                        <input type="radio" name="supportsEOrdering" value="Yes" id="supportsEOrderingYes">
+                        <label for="supportsEOrderingYes">Yes</label>
+                        <input type="radio" name="supportsEOrdering" value="No" id="supportsEOrderingNo">
+                        <label for="supportsEOrderingNo">No</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header" onclick="togglePanel(this)">PURCHASING ORGANIZATION INFORMATION</div>
+            <div class="panel-content">
+                <div class="field-container">
+                    <label>Additional Purchasing Org:</label>
+                    <select id="additionalPurchOrg" style="width: 50%;">
+                        <option value="">Select</option>
+                        <option value="Org1">Org1</option>
+                        <option value="Org2">Org2</option>
+                    </select>
+                </div>
+                <div class="field-container">
+                    <label>Purchasing Group:</label>
+                    <select id="purchasingGroup" style="width: 50%;">
+                        <option value="">Select</option>
+                        <option value="Group1">Group1</option>
+                        <option value="Group2">Group2</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header" onclick="togglePanel(this)">PAYEE/TERMS</div>
+            <div class="panel-content">
+                <div class="field-container">
+                    <label>Payment Terms:</label>
+                    <select id="paymentTerms" style="width: 50%;">
+                        <option value="">Select</option>
+                        <option value="Net 30">Net 30</option>
+                        <option value="Net 60">Net 60</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="buttons">
             <button class="submit" onclick="submitForm()">Submit</button>
             <button class="cancel" onclick="cancel()">Cancel</button>
         </div>
     </div>
     <script>
+        function togglePanel(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
+        }
+
+        function verifyGSTIN() {
+            const gstin = document.getElementById("gstin").value.trim();
+            const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            const validGSTINs = ["27AABCU9603R1ZM", "29AAGCM1234P1ZT", "33AAHCP7890N1ZF"];
+            
+            if (!gstin) {
+                alert("GSTIN No. is required.");
+                return;
+            }
+            if (!gstinRegex.test(gstin)) {
+                alert("Invalid GSTIN format (e.g., 27AABCU9603R1ZM).");
+                return;
+            }
+            if (validGSTINs.includes(gstin)) {
+                document.getElementById("gstinVerifyButton").textContent = "Verified";
+                document.getElementById("gstinVerifyButton").classList.add("verified");
+                document.getElementById("gstinVerifyButton").disabled = true;
+                alert("GSTIN verified successfully!");
+            } else {
+                document.getElementById("gstinVerifyButton").textContent = "Verify";
+                document.getElementById("gstinVerifyButton").classList.remove("verified");
+                document.getElementById("gstinVerifyButton").disabled = false;
+                alert("GSTIN verification failed. Please check the GSTIN.");
+            }
+        }
+
+        function verifyPAN() {
+            const pan = document.getElementById("pan").value.trim();
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            const validPANs = ["AABCU9603R", "AAGCM1234P", "AAHCP7890N"];
+            
+            if (!pan) {
+                alert("PAN Card No. is required.");
+                return;
+            }
+            if (!panRegex.test(pan)) {
+                alert("Invalid PAN format (e.g., AABCU9603R).");
+                return;
+            }
+            if (validPANs.includes(pan)) {
+                document.getElementById("panVerifyButton").textContent = "Verified";
+                document.getElementById("panVerifyButton").classList.add("verified");
+                document.getElementById("panVerifyButton").disabled = true;
+                alert("PAN verified successfully!");
+            } else {
+                document.getElementById("panVerifyButton").textContent = "Verify";
+                document.getElementById("panVerifyButton").classList.remove("verified");
+                document.getElementById("panVerifyButton").disabled = false;
+                alert("PAN verification failed. Please check the PAN.");
+            }
+        }
+
         function submitForm() {
+            const gstinButton = document.getElementById("gstinVerifyButton");
+            const panButton = document.getElementById("panVerifyButton");
+            
+            if (!gstinButton.classList.contains("verified") || !panButton.classList.contains("verified")) {
+                alert("Please verify both GSTIN and PAN before submitting.");
+                return;
+            }
+            
             alert("Supplier Request Form submitted successfully!");
             window.close();
         }
+
         function cancel() {
             if (confirm("Are you sure you want to cancel? All unsaved changes will be lost.")) {
                 window.close();
