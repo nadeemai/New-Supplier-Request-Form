@@ -1613,7 +1613,6 @@ sap.ui.define([
                 supplierType: "",
                 gstin: "",
                 pan: "",
-                duns: "",
                 address: "",
                 isVerified: false,
                 currentStep: 1
@@ -1625,7 +1624,6 @@ sap.ui.define([
             var oVerificationData = {
                 gstin: "",
                 pan: "",
-                duns: "",
                 isVerified: false,
                 duplicateVendor: {
                     V0001: false,
@@ -1663,16 +1661,17 @@ sap.ui.define([
                 .inactiveStep { background-color: #d3d3d3; color: #666; }
                 .activeStep { background-color: #ff0000; color: #fff; }
                 .activeStep.stepText { background-color: transparent; color: #000; font-weight: bold; }
-                .form-container { padding: 20px; max-width: 600px; margin: 0 auto; border: 1px solid #d9d9d9; border-radius: 8px; background-color: #fff; }
+                .form-container { padding: 20px; max-width: 800px; margin: 0 auto; border: 1px solid #d9d9d9; border-radius: 8px; background-color: #fff; }
                 .header { background-color: #ff0000; color: #fff; padding: 10px; text-align: center; border-top-left-radius: 8px; border-top-right-radius: 8px; }
                 .step-indicator { display: flex; align-items: center; margin-bottom: 20px; }
                 .form-field { margin-bottom: 15px; }
                 .form-field label { display: block; font-weight: bold; margin-bottom: 5px; }
-                .form-field input, .form-field textarea, .form-field select { width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; }
-                .form-field button { padding: 8px 16px; margin-left: 10px; background-color: #0070f0; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+                .form-field input, .form-field textarea, .form-field select { width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; box-sizing: border-box; }
+                .form-field .input-with-button { display: flex; align-items: center; gap: 10px; }
+                .form-field button { padding: 8px 16px; background-color: #0070f0; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
                 .form-field button:disabled { background-color: #d3d3d3; cursor: not-allowed; }
                 .form-field .verified { background-color: #28a745; }
-                .buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+                .buttons { display: flex; justify-content: flex-end; gap: 15px; margin-top: 20px; }
                 .buttons button { padding: 8px 16px; border-radius: 4px; cursor: pointer; }
                 .buttons .proceed { background-color: #0070f0; color: #fff; border: none; }
                 .buttons .cancel { background-color: #fff; color: #ff0000; border: 1px solid #ff0000; }
@@ -1684,7 +1683,7 @@ sap.ui.define([
                 .duplicate-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
                 .duplicate-table th, .duplicate-table td { border: 1px solid #d9d9d9; padding: 8px; text-align: left; }
                 .duplicate-table th { background-color: #f7f7f7; }
-                .duplicate-table .sapMRb { margin-right: 5px; }
+                .duplicate-table input[type="radio"] { margin-right: 5px; }
                 .reason-field { margin-top: 10px; }
                 .detailed-form-container { padding: 20px; max-width: 800px; margin: 20px auto; border: 1px solid #d9d9d9; border-radius: 8px; background-color: #fff; }
                 .section-header { background-color: #ff0000; color: #fff; padding: 10px; margin-bottom: 15px; border-radius: 4px; }
@@ -1703,13 +1702,11 @@ sap.ui.define([
             var oVerificationModel = this.getView().getModel("verification");
             var oGstinInput = this.byId("gstinInput");
             var oPanInput = this.byId("panInput");
-            var oDunsInput = this.byId("dunsInput");
             var oVerifyButton = this.byId("verifyButton");
 
             // Get values
             var sGstin = oGstinInput.getValue().trim();
             var sPan = oPanInput.getValue().trim();
-            var sDuns = oDunsInput.getValue().trim();
 
             // Validate GSTIN format
             const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -1739,29 +1736,15 @@ sap.ui.define([
                 oPanInput.setValueState("None");
             }
 
-            // Validate DUNS format (9 digits)
-            const dunsRegex = /^\d{9}$/;
-            if (!sDuns) {
-                oDunsInput.setValueState("Error");
-                oDunsInput.setValueStateText("DUNS Number is required.");
-                return;
-            } else if (!dunsRegex.test(sDuns)) {
-                oDunsInput.setValueState("Error");
-                oDunsInput.setValueStateText("Invalid DUNS format. It should be 9 digits (e.g., 123456789).");
-                return;
-            } else {
-                oDunsInput.setValueState("None");
-            }
-
             // Mock verification logic with multiple valid examples
             const validCredentials = [
-                { gstin: "27AABCU9603R1ZM", pan: "AABCU9603R", duns: "123456789" },
-                { gstin: "29AAGCM1234P1ZT", pan: "AAGCM1234P", duns: "987654321" },
-                { gstin: "33AAHCP7890N1ZF", pan: "AAHCP7890N", duns: "456789123" }
+                { gstin: "27AABCU9603R1ZM", pan: "AABCU9603R" },
+                { gstin: "29AAGCM1234P1ZT", pan: "AAGCM1234P" },
+                { gstin: "33AAHCP7890N1ZF", pan: "AAHCP7890N" }
             ];
 
             const isValid = validCredentials.some(cred => 
-                cred.gstin === sGstin && cred.pan === sPan && cred.duns === sDuns
+                cred.gstin === sGstin && cred.pan === sPan
             );
 
             if (isValid) {
@@ -1771,19 +1754,18 @@ sap.ui.define([
                 oVerificationModel.setProperty("/isVerified", true);
                 oVerificationModel.setProperty("/gstin", sGstin);
                 oVerificationModel.setProperty("/pan", sPan);
-                oVerificationModel.setProperty("/duns", sDuns);
-                MessageToast.show("GSTIN, PAN, and DUNS verified successfully!");
-                this.openDetailedSupplierForm(sGstin, sPan, sDuns);
+                MessageToast.show("GSTIN and PAN verified successfully!");
+                this.openDetailedSupplierForm(sGstin, sPan);
             } else {
                 oVerifyButton.setText("Verify");
                 oVerifyButton.removeStyleClass("verified");
                 oVerifyButton.setEnabled(true);
                 oVerificationModel.setProperty("/isVerified", false);
-                MessageToast.show("Verification failed. Please check the GSTIN, PAN Card No., and DUNS Number.");
+                MessageToast.show("Verification failed. Please check the GSTIN and PAN Card No.");
             }
         },
 
-        openDetailedSupplierForm: function (sGstin, sPan, sDuns) {
+        openDetailedSupplierForm: function (sGstin, sPan) {
             var sHtmlContent = `
 <!DOCTYPE html>
 <html lang="en">
@@ -1844,7 +1826,7 @@ sap.ui.define([
         .buttons {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
         }
         .buttons button {
@@ -1907,10 +1889,6 @@ sap.ui.define([
         <!-- Requirement Section -->
         <div class="form-section">
             <div class="section-header">REQUIREMENT</div>
-            <div>
-                <label>Please Enter DUNS:</label>
-                <input type="text" id="dunsRequirement" value="${sDuns}" readonly>
-            </div>
             <div>
                 <label>Address:</label>
                 <textarea id="address" placeholder="Enter Address" rows="3"></textarea>
@@ -2511,7 +2489,6 @@ sap.ui.define([
             oNewSupplierModel.setProperty("/supplierType", "");
             oNewSupplierModel.setProperty("/gstin", "");
             oNewSupplierModel.setProperty("/pan", "");
-            oNewSupplierModel.setProperty("/duns", "");
             oNewSupplierModel.setProperty("/address", "");
             oNewSupplierModel.setProperty("/isVerified", false);
 
@@ -2531,7 +2508,7 @@ sap.ui.define([
         }
         .form-container {
             padding: 20px;
-            max-width: 600px;
+            max-width: 800px;
             margin: 20px auto;
             border: 1px solid #d9d9d9;
             border-radius: 8px;
@@ -2592,9 +2569,13 @@ sap.ui.define([
             border-radius: 4px;
             box-sizing: border-box;
         }
+        .form-field .input-with-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .form-field button {
             padding: 8px 16px;
-            margin-left: 10px;
             background-color: #0070f0;
             color: #fff;
             border: none;
@@ -2611,7 +2592,7 @@ sap.ui.define([
         .buttons {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 15px;
             margin-top: 20px;
         }
         .buttons button {
@@ -2763,19 +2744,16 @@ sap.ui.define([
                 </div>
                 <div class="form-field">
                     <label for="gstin">GSTIN No.: <span style="color: #ff0000;">*</span></label>
-                    <input type="text" id="gstin" placeholder="Enter GSTIN No.">
-                    <button id="verifyButton" onclick="verifyGSTINAndPAN()">Verify</button>
+                    <div class="input-with-button">
+                        <input type="text" id="gstin" placeholder="Enter GSTIN No.">
+                        <button id="verifyButton" onclick="verifyGSTINAndPAN()">Verify</button>
+                    </div>
                     <div id="gstinError" class="error-message" style="display: none;"></div>
                 </div>
                 <div class="form-field">
                     <label for="pan">PAN Card No.: <span style="color: #ff0000;">*</span></label>
                     <input type="text" id="pan" placeholder="Enter PAN Card No.">
                     <div id="panError" class="error-message" style="display: none;"></div>
-                </div>
-                <div class="form-field">
-                    <label for="duns">DUNS NUMBER: <span style="color: #ff0000;">*</span></label>
-                    <input type="text" id="duns" placeholder="Enter DUNS Number">
-                    <div id="dunsError" class="error-message" style="display: none;"></div>
                 </div>
                 <div class="form-field">
                     <label for="address">Address</label>
@@ -2799,7 +2777,6 @@ sap.ui.define([
             supplierType: "",
             gstin: "",
             pan: "",
-            duns: "",
             address: "",
             isVerified: false,
             duplicateVendor: "",
@@ -2863,7 +2840,6 @@ sap.ui.define([
         function verifyGSTINAndPAN() {
             formData.gstin = document.getElementById("gstin").value.trim();
             formData.pan = document.getElementById("pan").value.trim();
-            formData.duns = document.getElementById("duns").value.trim();
 
             // Validate GSTIN format
             const gstinRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -2899,32 +2875,15 @@ sap.ui.define([
                 document.getElementById("panError").style.display = "none";
             }
 
-            // Validate DUNS format
-            const dunsRegex = /^\d{9}$/;
-            if (!formData.duns) {
-                document.getElementById("duns").classList.add("error");
-                document.getElementById("dunsError").textContent = "DUNS Number is required.";
-                document.getElementById("dunsError").style.display = "block";
-                return;
-            } else if (!dunsRegex.test(formData.duns)) {
-                document.getElementById("duns").classList.add("error");
-                document.getElementById("dunsError").textContent = "Invalid DUNS format. It should be 9 digits (e.g., 123456789).";
-                document.getElementById("dunsError").style.display = "block";
-                return;
-            } else {
-                document.getElementById("duns").classList.remove("error");
-                document.getElementById("dunsError").style.display = "none";
-            }
-
             // Mock verification logic with multiple valid examples
             const validCredentials = [
-                { gstin: "27AABCU9603R1ZM", pan: "AABCU9603R", duns: "123456789" },
-                { gstin: "29AAGCM1234P1ZT", pan: "AAGCM1234P", duns: "987654321" },
-                { gstin: "33AAHCP7890N1ZF", pan: "AAHCP7890N", duns: "456789123" }
+                { gstin: "27AABCU9603R1ZM", pan: "AABCU9603R" },
+                { gstin: "29AAGCM1234P1ZT", pan: "AAGCM1234P" },
+                { gstin: "33AAHCP7890N1ZF", pan: "AAHCP7890N" }
             ];
 
             const isValid = validCredentials.some(cred => 
-                cred.gstin === formData.gstin && cred.pan === formData.pan && cred.duns === formData.duns
+                cred.gstin === formData.gstin && cred.pan === formData.pan
             );
 
             if (isValid) {
@@ -2934,14 +2893,14 @@ sap.ui.define([
                 isVerified = true;
                 formData.isVerified = true;
                 checkForDuplicates();
-                alert("GSTIN, PAN, and DUNS verified successfully!");
+                alert("GSTIN and PAN verified successfully!");
             } else {
                 document.getElementById("verifyButton").textContent = "Verify";
                 document.getElementById("verifyButton").classList.remove("verified");
                 document.getElementById("verifyButton").disabled = false;
                 isVerified = false;
                 formData.isVerified = false;
-                alert("Verification failed. Please check the GSTIN, PAN Card No., and DUNS Number.");
+                alert("Verification failed. Please check the GSTIN and PAN Card No.");
             }
         }
 
@@ -2964,19 +2923,18 @@ sap.ui.define([
         function proceed() {
             formData.gstin = document.getElementById("gstin").value.trim();
             formData.pan = document.getElementById("pan").value.trim();
-            formData.duns = document.getElementById("duns").value.trim();
             formData.address = document.getElementById("address").value.trim();
             formData.duplicateVendor = document.querySelector('input[name="duplicateVendor"]:checked')?.value || "";
             formData.duplicateReason = document.getElementById("duplicateReason")?.value.trim() || "";
             formData.differentAddress = document.querySelector('input[name="differentAddress"]:checked')?.value || "";
 
-            if (!formData.gstin || !formData.pan || !formData.duns) {
-                alert("Please fill in all required fields (GSTIN, PAN Card No., and DUNS Number) before proceeding.");
+            if (!formData.gstin || !formData.pan) {
+                alert("Please fill in all required fields (GSTIN and PAN Card No.) before proceeding.");
                 return;
             }
 
             if (!formData.isVerified) {
-                alert("Please verify the GSTIN, PAN Card No., and DUNS Number before proceeding.");
+                alert("Please verify the GSTIN and PAN Card No. before proceeding.");
                 return;
             }
 
